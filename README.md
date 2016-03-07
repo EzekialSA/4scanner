@@ -53,3 +53,10 @@ You can use this this script alone to download a single thread by doing:
 ``` download.py http://boards.4chan.org/b/thread/373687492 ```
 
 It will download all images until the thread die.
+
+# Tips
+
+Since 4chan is a cesspool of repost, you will probably download duplicates pictures
+very fast. To prevent this you can download fdupes and run it as a cron job to remove duplicates like so:
+
+```fdupes -rdN downloads/```
