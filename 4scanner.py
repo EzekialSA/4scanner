@@ -91,6 +91,7 @@ def main():
 
 if __name__ == '__main__':
     try:
-        main()
+        while True:
+            main()
     except KeyboardInterrupt:
         pass
