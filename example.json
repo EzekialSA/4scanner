@@ -1,0 +1,20 @@
+{"searches":[
+    {
+      "folder_name":"YOUR_FOLDER_NAME",
+      "board": "BOARD_LETTER",
+      "keywords": ["KEYWORD1", "KEYWORD2"]
+    },
+
+    {
+      "folder_name":"vidya",
+      "board": "vg",
+      "keywords": ["tf2", "splatoon", "world of warcraft"]
+    },
+
+    {
+      "folder_name":"desktop_thread",
+      "board": "g",
+      "keywords": ["desktop", "KEYWORD2"]
+    }
+
+]}
