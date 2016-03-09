@@ -1,16 +1,17 @@
-#!/usr/bin/python
-import urllib2
+#!/usr/bin/env python3
+import urllib
 import argparse
 import logging
 import os
 import sys
 import re
 import time
-import httplib
+import http.client
+import requests
 
 
 def load(url):
-    return urllib2.urlopen(url).read()
+    return requests.get(url).text
 
 
 def main():
@@ -44,14 +45,12 @@ def main():
                 for link, img in re.findall('(\/\/i.4cdn.org/\w+\/(\d+\.(?:jpg|png|gif|webm)))', load(t)):
                     if not os.path.exists(img):
                         print(img)
-                        data = load('https:' + link)
-                        with open(img, 'w') as f:
-                            f.write(data)
-            except urllib2.HTTPError, err:
+                        urllib.request.urlretrieve('http:' + link, img)
+            except urllib.error.HTTPError as err:
                 print('%s 404\'d')
                 args.thread.remove(t)
                 continue
-            except (urllib2.URLError, httplib.BadStatusLine, httplib.IncompleteRead):
+            except (urllib.error.URLError, http.client.BadStatusLine, http.client.IncompleteRead):
                 print('something went wrong')
         print('.')
         time.sleep(20)

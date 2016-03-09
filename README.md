@@ -3,6 +3,11 @@
 4scanner search 4chan's thread for matching keywords then dowload all images
 to disk
 
+## Requirements
+- requests
+
+To install all requirements: ``` pip install -r requirement.txt ```
+
 ## How to
 
 the first things you need to do is create a simple json file with the output
