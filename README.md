@@ -1,6 +1,6 @@
 # 4scanner
 
-4scanner search 4chan's thread for matching keywords then dowload all images
+4scanner search 4chan's thread for matching keywords then download all images
 to disk
 
 ## Requirements
@@ -48,7 +48,6 @@ Here is an example of what the JSON file should look like:
 
 - /f/ - Flash is not supported (yet?)
 - the keywords search is case insentitive
-- Check all dowloads happening in the background with "ps aux | grep download.py"
 
 ## download.py
 
@@ -59,7 +58,7 @@ You can use this this script alone to download a single thread by doing:
 
 It will download all images until the thread die.
 
-# Tips
+## Tips
 
 Since 4chan is a cesspool of repost, you will probably download duplicates pictures
 very fast. To prevent this you can download fdupes and run it as a cron job to remove duplicates like so:
