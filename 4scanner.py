@@ -5,6 +5,7 @@ import download
 import time
 import json
 import os
+import re
 import subprocess
 import urllib.request
 import download
@@ -36,14 +37,15 @@ def scan_thread(keyword, catalog_json):
     matched_threads = []
     for i in range(len(catalog_json)):
         for thread in catalog_json[i]["threads"]:
+            regex = r'\b{0}\b'.format(keyword)
             # Search thread title
             if 'sub' in thread:
-                if keyword.lower() in str(thread["sub"]).lower():
+                if re.search(regex, str(thread["sub"]), re.IGNORECASE):
                     matched_threads.append(thread["no"])
 
             # Search OPs post body
             if 'com' in thread:
-                if keyword.lower() in str(thread["com"]).lower():
+                if re.search(regex, str(thread["com"]), re.IGNORECASE):
                     matched_threads.append(thread["no"])
 
     return matched_threads
