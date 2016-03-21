@@ -36,9 +36,15 @@ def scan_thread(keyword, catalog_json):
     matched_threads = []
     for i in range(len(catalog_json)):
         for thread in catalog_json[i]["threads"]:
+            # Search thread title
+            if 'sub' in thread:
+                if keyword.lower() in str(thread["sub"]).lower():
+                    matched_threads.append(thread["no"])
+
+            # Search OPs post body
             if 'com' in thread:
                 if keyword.lower() in str(thread["com"]).lower():
-                    matched_threads.insert(0, thread["no"])
+                    matched_threads.append(thread["no"])
 
     return matched_threads
 
