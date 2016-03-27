@@ -100,9 +100,6 @@ def main():
                     download_thread(thread_id, board, folder_name)
                     add_to_downloaded(thread_id)
 
-                    # waiting because starting downloads too fast sometime
-                    # crashes download.py
-                    time.sleep(5)
     active_downloads = threading.active_count()-1
     print("{0} Threads download are active!".format(active_downloads))
     print("Searching again in 10 minutes!")
