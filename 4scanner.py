@@ -16,6 +16,7 @@ import threading
 parser = argparse.ArgumentParser()
 parser.add_argument("keywords_file",
                     help="file with the keywords to search for")
+parser.add_argument("-o", "--output", help="Specify output folder")
 args = parser.parse_args()
 
 # Checking keywords file
@@ -23,7 +24,13 @@ if not os.path.isfile(args.keywords_file):
         print("Keywords file does not exist...")
         exit(1)
 
-workpath = os.path.dirname(os.path.realpath(__file__))
+if args.output:
+    output = args.output
+    if not os.path.exists(output):
+        print("{0} Does not exist.".format(output))
+        exit(1)
+else:
+    output = os.path.dirname(os.path.realpath(__file__))
 
 
 def get_catalog_json(board):
@@ -54,6 +61,7 @@ def scan_thread(keyword, catalog_json):
 def download_thread(id, board, folder):
     url = "http://boards.4chan.org/{0}/thread/{1}".format(board, id)
     t = threading.Thread(target=download.download_thread, args=(str(url),
+                                                                output,
                                                                 folder,
                                                                 True))
     t.daemon = True
@@ -61,7 +69,7 @@ def download_thread(id, board, folder):
 
 
 def add_to_downloaded(id):
-    download_log = open("{0}/downloaded.txt".format(workpath), "a")
+    download_log = open("{0}/downloaded.txt".format(output), "a")
     download_log.write("{0}\n".format(id))
 
 
@@ -69,7 +77,7 @@ def main():
     current_time = time.strftime('%d/%b/%Y-%H:%M')
     print("{0} Searching threads...".format(current_time))
 
-    dl_log = open("{0}/downloaded.txt".format(workpath), "a")
+    dl_log = open("{0}/downloaded.txt".format(output), "a")
     dl_log.write(time.strftime('Execution date {0}\n'.format(current_time)))
     dl_log.close()
 
@@ -86,7 +94,7 @@ def main():
         for keyword in keywords:
             threads_id = scan_thread(keyword, catalog_json)
 
-            dl_log = open("{0}/downloaded.txt".format(workpath)).read()
+            dl_log = open("{0}/downloaded.txt".format(output)).read()
             for thread_id in list(set(threads_id)):
                 if str(thread_id) not in dl_log:
                     download_thread(thread_id, board, folder_name)

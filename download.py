@@ -13,8 +13,10 @@ import requests
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('thread', help='url of the thread')
-    parser.add_argument('folder', nargs='?', help='change output folder')
+    parser.add_argument('folder', nargs='?',
+                        help='Change the folder name where images are downloaded')
     parser.add_argument("-q", "--quiet", action='store_true', help="quiet")
+    parser.add_argument("-o", "--output", help="Specify output folder")
     args = parser.parse_args()
 
     print(args.thread)
@@ -28,7 +30,15 @@ def main():
     else:
         folder = ''.join(args.thread).split('/')[5].split('#')[0]
 
-    download_thread(args.thread, folder, quiet)
+    if args.output is not None:
+        output = args.output
+        if not os.path.exists(output):
+            print("{0} Does not exist.".format(output))
+            exit(1)
+    else:
+        output = os.path.dirname(os.path.realpath(__file__))
+
+    download_thread(args.thread, output, folder, quiet)
 
 
 def load(url):
@@ -37,11 +47,10 @@ def load(url):
     return response.text
 
 
-def download_thread(thread, folder, is_quiet):
-    workpath = os.path.dirname(os.path.realpath(__file__))
+def download_thread(thread, output_folder, folder, is_quiet):
     board = ''.join(thread).split('/')[3]
 
-    directory = os.path.join(workpath, 'downloads', board, folder + "/")
+    directory = os.path.join(output_folder, 'downloads', board, folder + "/")
     if not os.path.exists(directory):
         os.makedirs(directory)
 
