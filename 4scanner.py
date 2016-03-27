@@ -32,6 +32,8 @@ if args.output:
 else:
     output = os.path.dirname(os.path.realpath(__file__))
 
+log_file = "downloaded-{0}.txt".format(time.strftime('%d%m%Y_%H%M'))
+
 
 def get_catalog_json(board):
     catalog = urllib.request.urlopen(
@@ -68,8 +70,8 @@ def download_thread(id, board, folder):
     t.start()
 
 
-def add_to_downloaded(id):
-    download_log = open("{0}/downloaded.txt".format(output), "a")
+def add_to_downloaded(id, log_file):
+    download_log = open("{0}/{1}".format(output, log_file), "a")
     download_log.write("{0}\n".format(id))
 
 
@@ -77,7 +79,7 @@ def main():
     current_time = time.strftime('%d/%b/%Y-%H:%M')
     print("{0} Searching threads...".format(current_time))
 
-    dl_log = open("{0}/downloaded.txt".format(output), "a")
+    dl_log = open("{0}/{1}".format(output, log_file), "a")
     dl_log.write(time.strftime('Execution date {0}\n'.format(current_time)))
     dl_log.close()
 
@@ -94,11 +96,11 @@ def main():
         for keyword in keywords:
             threads_id = scan_thread(keyword, catalog_json)
 
-            dl_log = open("{0}/downloaded.txt".format(output)).read()
+            dl_log = open("{0}/{1}".format(output, log_file)).read()
             for thread_id in list(set(threads_id)):
                 if str(thread_id) not in dl_log:
                     download_thread(thread_id, board, folder_name)
-                    add_to_downloaded(thread_id)
+                    add_to_downloaded(thread_id, log_file)
 
     active_downloads = threading.active_count()-1
     print("{0} Threads download are active!".format(active_downloads))
