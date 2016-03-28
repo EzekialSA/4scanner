@@ -9,22 +9,22 @@ to disk
 
 ## How to
 
-the first things you need to do is create a simple json file with the output
-folder you want, the board(s) you want to search and the keywords.
-(set the json file section for more details)
+the first thing you need to do is create a simple json file with the folders names 
+you want, the board(s) you want to search and the keywords.
+(see the json file section for more details)
 
 After your json file is done you can start 4scanner with:
 
 ``` 4scanner file.json ```
 
 it will search all threads for the keywords defined in your json file and
-download all images/webms from threads where a keyword is found.
+download all images/webms from threads where a keyword is found. (In the current directory unless you specify one with -o )
 
 ## Creating your JSON file
 
 Creating the JSON file is easy, you can use the example.json file as a base.
 
-Your "Searches" are what 4scanner use to know which board check for what keywords and where to download the images, you can have as many "Searches" as you want.
+Your "Searches" are what 4scanner use to know which board to check for what keywords and the name of the folder where it needs to download the images, you can have as many "Searches" as you want.
 
 Here is an example of what the JSON file should look like:
 ```
