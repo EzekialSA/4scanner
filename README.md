@@ -3,10 +3,9 @@
 4scanner search 4chan's thread for matching keywords then download all images
 to disk
 
-## Requirements
-- requests
+## Installing
 
-To install all requirements: ``` pip install -r requirement.txt ```
+``` pip install 4scanner ```
 
 ## How to
 
@@ -16,7 +15,7 @@ folder you want, the board(s) you want to search and the keywords.
 
 After your json file is done you can start 4scanner with:
 
-``` 4scanner.py file.json ```
+``` 4scanner file.json ```
 
 it will search all threads for the keywords defined in your json file and
 download all images/webms from threads where a keyword is found.
@@ -49,12 +48,11 @@ Here is an example of what the JSON file should look like:
 - /f/ - Flash is not supported (yet?)
 - the keywords search is case insentitive
 
-## download.py
+## 4downloader
 
-download.py is the script used to download the threads found with the keywords.
-You can use this this script alone to download a single thread by doing:
-
-``` download.py http://boards.4chan.org/b/thread/373687492 ```
+4downloader is also installed with 4scanner and can be use to download
+a single thread like this:
+``` 4downloader http://boards.4chan.org/b/thread/373687492 ```
 
 It will download all images until the thread die.
 
