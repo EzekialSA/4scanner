@@ -5,7 +5,9 @@ to disk
 
 ## Installing
 
-``` pip install 4scanner ```
+``` pip3 install 4scanner ```
+
+(4scanner is ONLY compatible with python3+)
 
 ## How to
 
