@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/Lacsap-/4scanner.svg?branch=master)](https://travis-ci.org/Lacsap-/4scanner)
 # 4scanner
 
 4scanner search 4chan's thread for matching keywords then download all images
