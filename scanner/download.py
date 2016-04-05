@@ -38,7 +38,8 @@ def was_downloaded(img_filename, tmp_log):
 def download_thread(thread, output_folder, folder, is_quiet):
     board = ''.join(thread).split('/')[3]
 
-    tmp_log = "/tmp/4scanner_tmp_{0}".format(threading.current_thread().name)
+    tmp_log = ("/tmp/4scanner_tmp_{0}_{1}"
+               .format(os.getpid(), threading.current_thread().name))
 
     directory = os.path.join(output_folder, 'downloads', board, folder + "/")
     if not os.path.exists(directory):
