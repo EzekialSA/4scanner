@@ -43,7 +43,12 @@ def download_thread(thread, output_folder, folder, is_quiet):
 
     directory = os.path.join(output_folder, 'downloads', board, folder + "/")
     if not os.path.exists(directory):
-        os.makedirs(directory)
+        try:
+            os.makedirs(directory)
+        except OSError as e:  # Multiple thread might wants to make the same dir
+            if e.errno != 17:
+                raise
+            pass
 
     while True:
         try:
