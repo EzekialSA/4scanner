@@ -52,7 +52,10 @@ def download_thread(thread, output_folder, folder, is_quiet):
                     if not is_quiet:
                         print(img)
                     if not was_downloaded(img, tmp_log):
-                        urllib.request.urlretrieve('http:' + link, directory + img)
+                        try:
+                            urllib.request.urlretrieve('http:' + link, directory + img)
+                        except urllib.error.HTTPError as err:
+                            pass
                         add_to_downloaded_log(img, tmp_log)
             if not is_quiet:
                 print('.')
