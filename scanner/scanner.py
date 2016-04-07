@@ -67,17 +67,22 @@ def scan(keywords_file, output, log_file):
             folder_name = search["folder_name"]
             board = search["board"]
             keywords = search["keywords"]
+            try:
+                catalog_json = get_catalog_json(board)
 
-            catalog_json = get_catalog_json(board)
+                for keyword in keywords:
+                    threads_id = scan_thread(keyword, catalog_json)
 
-            for keyword in keywords:
-                threads_id = scan_thread(keyword, catalog_json)
-
-                dl_log = open("{0}/{1}".format(output, log_file)).read()
-                for thread_id in list(set(threads_id)):
-                    if str(thread_id) not in dl_log:
-                        download_thread(thread_id, board, folder_name, output)
-                        add_to_downloaded(thread_id, log_file, output)
+                    dl_log = open("{0}/{1}".format(output, log_file)).read()
+                    for thread_id in list(set(threads_id)):
+                        if str(thread_id) not in dl_log:
+                            download_thread(thread_id, board, folder_name,
+                                            output)
+                            add_to_downloaded(thread_id, log_file, output)
+            except requests.exceptions.HTTPError as err:
+                print("Error while opening {0} catalog page. "
+                      "Retrying during next scan.")
+                pass
 
         active_downloads = threading.active_count()-1
         print("{0} Threads download are active!".format(active_downloads))
