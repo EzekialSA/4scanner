@@ -81,7 +81,7 @@ def scan(keywords_file, output, log_file):
                             add_to_downloaded(thread_id, log_file, output)
             except requests.exceptions.HTTPError as err:
                 print("Error while opening {0} catalog page. "
-                      "Retrying during next scan.")
+                      "Retrying during next scan.".format(board))
                 pass
 
         active_downloads = threading.active_count()-1
