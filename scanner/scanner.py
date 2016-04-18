@@ -85,6 +85,6 @@ def scan(keywords_file, output, log_file):
                 pass
 
         active_downloads = threading.active_count()-1
-        print("{0} Threads download are active!".format(active_downloads))
-        print("Searching again in 10 minutes!")
-        time.sleep(600)
+        print("{0} threads currently active for downloading.".format(active_downloads))
+        print("Searching again in 5 minutes!")
+        time.sleep(300)
