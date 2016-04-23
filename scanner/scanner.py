@@ -89,7 +89,7 @@ def scan(keywords_file, output, log_file):
                                             folder_name,
                                             output)
                             add_to_downloaded(thread_id, log_file, output)
-            except requests.exceptions.HTTPError as err:
+            except urllib.error.HTTPError as err:
                 print("Error while opening {0} catalog page. "
                       "Retrying during next scan.".format(board))
                 pass

@@ -101,6 +101,8 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet):
                             except urllib.error.HTTPError as err:
                                 pass
                             add_to_downloaded_log(picture["tim"], tmp_log)
+                # Sleeping after each download to lighten the load on the chans
+                time.sleep(2)
             if not is_quiet:
                 print('.')
             time.sleep(20)
