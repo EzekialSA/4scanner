@@ -86,6 +86,7 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet):
                         except urllib.error.HTTPError as err:
                             pass
                         add_to_downloaded_log(post["tim"], tmp_log)
+                        time.sleep(2)
                 # Some imageboards allow more than 1 picture per post
                 if 'extra_files' in post:
                     for picture in post["extra_files"]:
@@ -101,8 +102,7 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet):
                             except urllib.error.HTTPError as err:
                                 pass
                             add_to_downloaded_log(picture["tim"], tmp_log)
-                # Sleeping after each download to lighten the load on the chans
-                time.sleep(2)
+                            time.sleep(2)
             if not is_quiet:
                 print('.')
             time.sleep(20)
