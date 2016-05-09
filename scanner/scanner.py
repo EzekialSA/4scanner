@@ -52,8 +52,25 @@ def add_to_downloaded(id, log_file, output):
     download_log.write("{0}\n".format(id))
 
 
-def scan(keywords_file, output, log_file):
+def folder_size_mb(folder):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(folder):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size / 1000000
+
+
+def check_quota(folder, quota_mb):
+    if int(quota_mb) < folder_size_mb(os.path.join(folder, "downloads")):
+        print("Quota limit exceeded. Stopping 4scanner.")
+        exit(0)
+
+
+def scan(keywords_file, output, log_file, quota_mb, wait_time):
     while True:
+        check_quota(output, quota_mb)
+
         curr_time = time.strftime('%d/%b/%Y-%H:%M')
         print("{0} Searching threads...".format(curr_time))
 
@@ -96,5 +113,6 @@ def scan(keywords_file, output, log_file):
 
         active_downloads = threading.active_count()-1
         print("{0} threads currently downloading.".format(active_downloads))
-        print("Searching again in 5 minutes!")
-        time.sleep(300)
+        print("Searching again in {0} minutes!"
+              .format(str(int(wait_time / 60))))
+        time.sleep(wait_time)
