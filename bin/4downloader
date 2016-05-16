@@ -5,6 +5,28 @@ import os
 import scanner
 from scanner import download
 
+
+def condition_check(args):
+    # Checking conditions
+    condition = {}
+    if args.extension:
+        condition["ext"] = args.extension.split(',')
+    else:
+        condition["ext"] = False
+
+    if args.width:
+        condition["width"] = args.width
+    else:
+        condition["width"] = False
+
+    if args.height:
+        condition["height"] = args.height
+    else:
+        condition["height"] = False
+
+    return condition
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('thread', help='url of the thread')
@@ -13,6 +35,13 @@ def main():
     parser.add_argument("-i", "--imageboard",
                         help="choose the imageboard you from to download from."
                         " Default to 4chan")
+    parser.add_argument("-H", "--height",
+                        help="Specify height. format: >256, <256 or =256")
+    parser.add_argument("-W", "--width",
+                        help="Specify width. format: >256, <256 or =256")
+    parser.add_argument("-E", "--extension",
+                        help="""Download only specific(s) extension(s). Ex: .jpg
+                             (can be multiple extensions separated by a ,)""")
     parser.add_argument("-q", "--quiet", action='store_true', help="quiet")
     parser.add_argument("-o", "--output", help="Specify output folder")
     args = parser.parse_args()
@@ -20,6 +49,8 @@ def main():
     print(args.thread)
     thread_nb = str(args.thread.split('/')[5].split('.')[0])
     board = str(args.thread.split('/')[3])
+
+    condition = condition_check(args)
 
     quiet = False
     if args.quiet:
@@ -43,7 +74,7 @@ def main():
     else:
         chan = "4chan"
 
-    download.download_thread(thread_nb, board, chan, output, folder, quiet)
+    download.download_thread(thread_nb, board, chan, output, folder, quiet, condition)
 
 
 if __name__ == '__main__':

@@ -44,7 +44,7 @@ def main():
             print("Quota format invalid. Valid example: 20GB, 700MB etc...")
             exit(1)
     else:
-        quota = False
+        quota_mb = False
 
     # Checking for sleep time
     if args.wait_time:
