@@ -69,7 +69,8 @@ def check_quota(folder, quota_mb):
 
 def scan(keywords_file, output, log_file, quota_mb, wait_time):
     while True:
-        check_quota(output, quota_mb)
+        if quota_mb:
+            check_quota(output, quota_mb)
 
         curr_time = time.strftime('%d/%b/%Y-%H:%M')
         print("{0} Searching threads...".format(curr_time))
