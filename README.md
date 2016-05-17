@@ -55,6 +55,29 @@ Here is an example of what the JSON file should look like:
 ]}
 ```
 
+## Optional search options
+
+- imageboard
+
+Specify the imageboard to search.
+Default to 4chan if not specified.
+
+- extension
+
+Download only images with one (or more) extension.
+For example: .webm
+
+
+- width
+
+specify minimum, maximum or exact width of the images to download. Format is >, < or = followed by the number of pixel.
+For example: =1920, >1024 or <600
+
+- height
+
+specify minimum, maximum or exact height of the images to download. Format is >, < or = followed by the number of pixel.
+For example: =1080, >1024 or <600
+
 ## Notes
 
 - the keywords search is case insentitive

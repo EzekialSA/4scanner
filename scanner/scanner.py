@@ -95,7 +95,13 @@ def scan(keywords_file, output, log_file, quota_mb, wait_time):
             # Checking conditions
             condition = {}
             if 'extension' in search:
-                condition["ext"] = search['extension'].split(',')
+                condition["ext"] = []
+                if isinstance(search['extension'], str):
+                    condition["ext"].append(search['extension'])
+                else:
+                    for extension in search['extension']:
+                        condition["ext"].append(extension)
+
             else:
                 condition["ext"] = False
 
