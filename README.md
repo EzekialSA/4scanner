@@ -78,6 +78,23 @@ For example: =1920, >1024 or <600
 specify minimum, maximum or exact height of the images to download. Format is >, < or = followed by the number of pixel.
 For example: =1080, >1024 or <600
 
+
+- Example with all optionals options
+```
+{"searches":[
+    {
+      "imageboard":"4chan",
+      "folder_name":"vidya",
+      "board": "v",
+      "width":">1000",
+      "height":">1000",
+      "extension": [".jpg", ".png"],
+      "keywords": ["tf2", "splatoon", "world of tank"]
+    }
+]}
+```
+
+This will download images bigger than 1000x1000 which are .jpg or .png
 ## Notes
 
 - the keywords search is case insentitive
