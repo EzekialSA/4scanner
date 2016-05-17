@@ -36,13 +36,14 @@ def scan_thread(keyword, catalog_json):
     return matched_threads
 
 
-def download_thread(thread_id, chan, board, folder, output):
+def download_thread(thread_id, chan, board, folder, output, condition):
     t = threading.Thread(target=download.download_thread, args=(thread_id,
                                                                 board,
                                                                 chan,
                                                                 output,
                                                                 folder,
-                                                                True))
+                                                                True,
+                                                                condition))
     t.daemon = True
     t.start()
 
@@ -69,7 +70,8 @@ def check_quota(folder, quota_mb):
 
 def scan(keywords_file, output, log_file, quota_mb, wait_time):
     while True:
-        check_quota(output, quota_mb)
+        if quota_mb:
+            check_quota(output, quota_mb)
 
         curr_time = time.strftime('%d/%b/%Y-%H:%M')
         print("{0} Searching threads...".format(curr_time))
@@ -90,6 +92,29 @@ def scan(keywords_file, output, log_file, quota_mb, wait_time):
                 # default
                 chan = "4chan"
 
+            # Checking conditions
+            condition = {}
+            if 'extension' in search:
+                condition["ext"] = []
+                if isinstance(search['extension'], str):
+                    condition["ext"].append(search['extension'])
+                else:
+                    for extension in search['extension']:
+                        condition["ext"].append(extension)
+
+            else:
+                condition["ext"] = False
+
+            if 'width' in search:
+                condition["width"] = search['width']
+            else:
+                condition["width"] = False
+
+            if 'height' in search:
+                condition["height"] = search['height']
+            else:
+                condition["height"] = False
+
             folder_name = search["folder_name"]
             board = search["board"]
             keywords = search["keywords"]
@@ -104,7 +129,8 @@ def scan(keywords_file, output, log_file, quota_mb, wait_time):
                         if str(thread_id) not in dl_log:
                             download_thread(thread_id, chan, board,
                                             folder_name,
-                                            output)
+                                            output,
+                                            condition)
                             add_to_downloaded(thread_id, log_file, output)
             except urllib.error.HTTPError as err:
                 print("Error while opening {0} catalog page. "

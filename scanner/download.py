@@ -38,7 +38,71 @@ def was_downloaded(img_filename, tmp_log):
         return False
 
 
-def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet):
+def extension_condition(condition_ext, post_ext):
+    if condition_ext:
+        for extension in condition_ext:
+            if extension == post_ext:
+                return True
+    else:
+        # Always return true if condition was not specified
+        return True
+
+    return False
+
+
+def width_condition(condition_width, post_width):
+    if condition_width:
+        if condition_width[0] == "=":
+            if int(post_width) == int(condition_width.split("=")[-1]):
+                return True
+        elif condition_width[0] == "<":
+            if int(post_width) < int(condition_width.split("<")[-1]):
+                return True
+        elif condition_width[0] == ">":
+            if int(post_width) > int(condition_width.split(">")[-1]):
+                return True
+        else:
+            print("width need to be in this format:")
+            print(">1024, <256 or =1920")
+            exit(1)
+    else:
+        # Always return true if condition was not specified
+        return True
+
+    return False
+
+
+def height_condition(condition_height, post_height):
+    if condition_height:
+        if condition_height[0] == "=":
+            if int(post_height) == int(condition_height.split("=")[-1]):
+                return True
+        elif condition_height[0] == "<":
+            if int(post_height) < int(condition_height.split("<")[-1]):
+                return True
+        elif condition_height[0] == ">":
+            if int(post_height) > int(condition_height.split(">")[-1]):
+                return True
+        else:
+            print("height need to be in this format:")
+            print(">1024, <256 or =1080")
+            exit(1)
+    else:
+        # Always return true if condition was not specified
+        return True
+
+    return False
+
+
+# Check if all condition returned true
+def all_condition_check(condition_list):
+    for i in condition_list:
+        if not i:
+            return False
+    return True
+
+
+def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, condition):
 
     # Getting info about the chan URL
     chan_url_info = chan_info.get_chan_info(chan)
@@ -75,34 +139,51 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet):
             for post in thread_json["posts"]:
                 if 'filename' in post:
                     if not was_downloaded(post["tim"], tmp_log):
-                        try:
-                            pic_url = "{0}{1}{2}".format(image_url,
-                                                         post["tim"],
-                                                         post["ext"])
-                            out_pic = "{0}{1}{2}".format(directory,
-                                                         post["tim"],
-                                                         post["ext"])
-                            urllib.request.urlretrieve(pic_url, out_pic)
-                        except urllib.error.HTTPError as err:
-                            pass
-                        add_to_downloaded_log(post["tim"], tmp_log)
-                        time.sleep(2)
+                        condition_list = []
+                        condition_list.append(extension_condition(condition["ext"], post['ext']))
+                        condition_list.append(width_condition(condition["width"], post['w']))
+                        condition_list.append(height_condition(condition["height"], post['h']))
+                        download_img = all_condition_check(condition_list)
+
+                        if download_img:
+                            try:
+                                pic_url = "{0}{1}{2}".format(image_url,
+                                                             post["tim"],
+                                                             post["ext"])
+                                out_pic = "{0}{1}{2}".format(directory,
+                                                             post["tim"],
+                                                             post["ext"])
+                                urllib.request.urlretrieve(pic_url, out_pic)
+                            except urllib.error.HTTPError as err:
+                                pass
+                            add_to_downloaded_log(post["tim"], tmp_log)
+                            time.sleep(2)
                 # Some imageboards allow more than 1 picture per post
                 if 'extra_files' in post:
                     for picture in post["extra_files"]:
                         if not was_downloaded(post["tim"], tmp_log):
-                            try:
-                                pic_url = "{0}{1}{2}".format(image_url,
-                                                             picture["tim"],
-                                                             post["ext"])
-                                out_pic = "{0}{1}{2}".format(directory,
-                                                             picture["tim"],
-                                                             picture["ext"])
-                                urllib.request.urlretrieve(pic_url, out_pic)
-                            except urllib.error.HTTPError as err:
-                                pass
-                            add_to_downloaded_log(picture["tim"], tmp_log)
-                            time.sleep(2)
+                            condition_list = []
+                            condition_list.append(extension_condition(condition["ext"], post['ext']))
+                            condition_list.append(width_condition(condition["width"], post['w']))
+                            condition_list.append(height_condition(condition["height"], post['h']))
+                            download_img = all_condition_check(condition_list)
+
+                            if download_img:
+                                try:
+                                    pic_url = ("{0}{1}{2}"
+                                               .format(image_url,
+                                                       picture["tim"],
+                                                       post["ext"]))
+                                    out_pic = ("{0}{1}{2}"
+                                               .format(directory,
+                                                       picture["tim"],
+                                                       picture["ext"]))
+                                    urllib.request.urlretrieve(pic_url,
+                                                               out_pic)
+                                except urllib.error.HTTPError as err:
+                                    pass
+                                add_to_downloaded_log(picture["tim"], tmp_log)
+                                time.sleep(2)
             if not is_quiet:
                 print('.')
             time.sleep(20)
