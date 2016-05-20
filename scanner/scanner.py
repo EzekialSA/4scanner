@@ -68,6 +68,60 @@ def check_quota(folder, quota_mb):
         exit(0)
 
 
+def get_condition(search):
+    condition = {}
+    if 'extension' in search:
+        condition["ext"] = []
+        if isinstance(search['extension'], str):
+            condition["ext"].append(search['extension'])
+        else:
+            for extension in search['extension']:
+                condition["ext"].append(extension)
+
+    else:
+        condition["ext"] = False
+
+    if 'width' in search:
+        condition["width"] = search['width']
+    else:
+        condition["width"] = False
+
+    if 'height' in search:
+        condition["height"] = search['height']
+    else:
+        condition["height"] = False
+
+    return condition
+
+
+def get_imageboard(search):
+    if 'imageboard' in search:
+        chan = search["imageboard"]
+        if not chan_info.get_chan_info(chan):
+            print("{0} is not supported.".format(chan))
+            exit(1)
+    else:
+        # default
+        chan = "4chan"
+
+    return chan
+
+
+def get_keyword(search):
+    if 'keywords' in search:
+        keywords_array = []
+        if isinstance(search['keywords'], str):
+            keywords_array.append(search['keywords'])
+        else:
+            for keywords in search['keywords']:
+                keywords_array.append(keywords)
+    else:
+        print("Cannot scan without any keyword...")
+        exit(1)
+
+    return keywords_array
+
+
 def scan(keywords_file, output, log_file, quota_mb, wait_time):
     while True:
         if quota_mb:
@@ -83,41 +137,15 @@ def scan(keywords_file, output, log_file, quota_mb, wait_time):
         json_file = json.load(open(keywords_file))
 
         for search in json_file["searches"]:
-            if 'imageboard' in search:
-                chan = search["imageboard"]
-                if not chan_info.get_chan_info(chan):
-                    print("{0} is not supported.".format(chan))
-                    exit(1)
-            else:
-                # default
-                chan = "4chan"
-
+            # Getting imageboard to search
+            chan = get_imageboard(search)
             # Checking conditions
-            condition = {}
-            if 'extension' in search:
-                condition["ext"] = []
-                if isinstance(search['extension'], str):
-                    condition["ext"].append(search['extension'])
-                else:
-                    for extension in search['extension']:
-                        condition["ext"].append(extension)
-
-            else:
-                condition["ext"] = False
-
-            if 'width' in search:
-                condition["width"] = search['width']
-            else:
-                condition["width"] = False
-
-            if 'height' in search:
-                condition["height"] = search['height']
-            else:
-                condition["height"] = False
-
+            condition = get_condition(search)
+            # Getting output folder name
             folder_name = search["folder_name"]
             board = search["board"]
-            keywords = search["keywords"]
+            keywords = get_keyword(search)
+
             try:
                 catalog_json = get_catalog_json(board, chan)
 
