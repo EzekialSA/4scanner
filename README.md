@@ -6,7 +6,7 @@ to disk.
 
 ## Supported imageboards
 - 4chan
-- lainchan (except lambda for now)
+- lainchan (use "lam" for the λ board)
 - uboachan
 
 You can create an issue if you want to see other imageboards supported
