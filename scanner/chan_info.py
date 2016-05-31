@@ -6,7 +6,7 @@ def get_chan_info(chan):
         # 4chan informations
         chan_base_url = "http://a.4cdn.org/"
         chan_image_base_url = "http://i.4cdn.org/"
-        chan_thread_subfolder = "/res/"
+        chan_thread_subfolder = "/thread/"
         chan_image_subfolder = "/"
     elif chan == "lainchan":
         # lainchan informations (lamba board does not work yet)
