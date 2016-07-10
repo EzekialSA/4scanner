@@ -14,6 +14,11 @@ def condition_check(args):
     else:
         condition["ext"] = False
 
+    if args.filename:
+        condition["filename"] = args.filename.split(',')
+    else:
+        condition["filename"] = False
+
     if args.width:
         condition["width"] = args.width
     else:
@@ -42,6 +47,9 @@ def main():
     parser.add_argument("-E", "--extension",
                         help="""Download only specific(s) extension(s). Ex: .jpg
                              (can be multiple extensions separated by a ,)""")
+    parser.add_argument("-f", "--filename",
+                        help="""Download only images containing the string. Ex: filename_1
+                             (can be multiple filenames separated by a ,)""")
     parser.add_argument("-q", "--quiet", action='store_true', help="quiet")
     parser.add_argument("-o", "--output", help="Specify output folder")
     args = parser.parse_args()

@@ -77,9 +77,18 @@ def get_condition(search):
         else:
             for extension in search['extension']:
                 condition["ext"].append(extension)
-
     else:
         condition["ext"] = False
+
+    if 'filename' in search:
+        condition["filename"] = []
+        if isinstance(search['filename'], str):
+            condition["filename"].append(search['filename'])
+        else:
+            for extension in search['filename']:
+                condition["filename"].append(extension)
+    else:
+        condition["filename"] = False
 
     if 'width' in search:
         condition["width"] = search['width']

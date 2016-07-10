@@ -50,6 +50,18 @@ def extension_condition(condition_ext, post_ext):
     return False
 
 
+def filename_condition(condition_filename, post_filename):
+    if condition_filename:
+        for i in condition_filename:
+            if i.lower() in post_filename.lower():
+                return True
+    else:
+        # Always return true if condition was not specified
+        return True
+
+    return False
+
+
 def width_condition(condition_width, post_width):
     if condition_width:
         if condition_width[0] == "=":
@@ -143,6 +155,7 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
                         condition_list.append(extension_condition(condition["ext"], post['ext']))
                         condition_list.append(width_condition(condition["width"], post['w']))
                         condition_list.append(height_condition(condition["height"], post['h']))
+                        condition_list.append(filename_condition(condition["filename"], post['filename']))
                         download_img = all_condition_check(condition_list)
 
                         if download_img:
@@ -166,6 +179,7 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
                             condition_list.append(extension_condition(condition["ext"], post['ext']))
                             condition_list.append(width_condition(condition["width"], post['w']))
                             condition_list.append(height_condition(condition["height"], post['h']))
+                            condition_list.append(filename_condition(condition["filename"], post['filename']))
                             download_img = all_condition_check(condition_list)
 
                             if download_img:

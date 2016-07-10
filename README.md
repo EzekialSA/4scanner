@@ -61,23 +61,49 @@ Here is an example of what the JSON file should look like:
 
 Specify the imageboard to search.
 Default to 4chan if not specified.
+For example:
+
+``` "imageboard":"4chan" ```
+
+- filename
+
+Download only images containing the the string specified. You can specify more than one filename.
+For example:
+
+``` "filename": "my_filename" ```
+or<br/>
+``` "filename": ["filename_1", "filename_2"] ```
 
 - extension
 
 Download only images with one (or more) extension.
-For example: .webm
+For example:
 
+``` "extension": ".png" ```
+or<br/>
+``` "extension": [".jpg", ".png"] ```
 
 - width
 
 specify minimum, maximum or exact width of the images to download. Format is >, < or = followed by the number of pixel.
-For example: =1920, >1024 or <600
+For example:
+
+``` "width":"=1920" ```
+or<br/>
+``` "width":">1024" ```
+or<br/>
+``` "width":"<600" ```
 
 - height
 
 specify minimum, maximum or exact height of the images to download. Format is >, < or = followed by the number of pixel.
-For example: =1080, >1024 or <600
+For example:
 
+``` "height":"=1080" ```
+or<br/>
+``` "height":">1024" ```
+or<br/>
+``` "height":"<600" ```
 
 - Example with all optionals options
 ```
