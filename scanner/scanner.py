@@ -143,7 +143,11 @@ def scan(keywords_file, output, log_file, quota_mb, wait_time):
         dl_log.write(time.strftime('Execution date {0}\n'.format(curr_time)))
         dl_log.close()
 
-        json_file = json.load(open(keywords_file))
+        try:
+            json_file = json.load(open(keywords_file))
+        except ValueError:
+            print("Your JSON file is malformed. Quitting.")
+            exit(1)
 
         for search in json_file["searches"]:
             # Getting imageboard to search
