@@ -14,9 +14,13 @@ import requests
 import threading
 
 
-def load(url):
+def load(url, tmp_log, is_quiet):
     response = requests.get(url)
-    response.raise_for_status()
+    if response.status_code == 404:
+        if not is_quiet:
+            print('{0} thread 404\'d')
+        os.unlink(tmp_log)
+        exit(0)
     return response.text
 
 
@@ -147,7 +151,12 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
 
     while True:
         try:
-            thread_json = json.loads(load(thread_url))
+            try:
+                thread_json = json.loads(load(thread_url, tmp_log, is_quiet))
+            except ValueError:
+                print("Problem connecting to {0}. stopping download for thread {1}".format(chan, thread_nb))
+                exit(1)
+
             for post in thread_json["posts"]:
                 if 'filename' in post:
                     if not was_downloaded(post["tim"], tmp_log):
@@ -201,6 +210,7 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
             if not is_quiet:
                 print('.')
             time.sleep(20)
+        # If the threads 404 while downloading an image
         except requests.exceptions.HTTPError as err:
             if not is_quiet:
                 print('thread 404\'d')
