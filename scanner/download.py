@@ -118,6 +118,25 @@ def all_condition_check(condition_list):
     return True
 
 
+# Return if an fit all search conditions
+def meet_dl_condition(post, condition):
+    condition_list = []
+    condition_list.append(extension_condition(condition["ext"], post['ext']))
+    condition_list.append(width_condition(condition["width"], post['w']))
+    condition_list.append(height_condition(condition["height"], post['h']))
+    condition_list.append(filename_condition(condition["filename"], post['filename']))
+    return all_condition_check(condition_list)
+
+
+def download_image(image_url, post_dic, out_dir):
+    try:
+        pic_url = image_url + str(post_dic["tim"]) + post_dic["ext"]
+        out_pic = os.path.join(out_dir, str(post_dic["tim"]) + post_dic["ext"])
+        urllib.request.urlretrieve(pic_url, out_pic)
+    except urllib.error.HTTPError as err:
+        pass
+
+
 def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, condition):
 
     # Getting info about the chan URL
@@ -130,20 +149,15 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
     thread_subfolder = chan_url_info[1]
     image_subfolder = chan_url_info[2]
 
-    thread_url = "{0}{1}{2}{3}.json".format(base_url,
-                                            board,
-                                            thread_subfolder,
-                                            thread_nb)
+    thread_url = "{0}{1}{2}{3}.json".format(base_url, board, thread_subfolder, thread_nb)
     image_url = "{0}{1}{2}".format(image_url, board, image_subfolder)
 
-    tmp_log = ("/tmp/4scanner_tmp_{0}_{1}"
-               .format(os.getpid(), threading.current_thread().name))
+    tmp_log = ("/tmp/4scanner_tmp-{0}-{1}".format(os.getpid(), threading.current_thread().name))
 
-    directory = os.path.join(output_folder, 'downloads', chan, board,
-                             folder + "/")
-    if not os.path.exists(directory):
+    out_dir = os.path.join(output_folder, 'downloads', chan, board, folder)
+    if not os.path.exists(out_dir):
         try:
-            os.makedirs(directory)
+            os.makedirs(out_dir)
         except OSError as e:  # folder may have been created by other threads
             if e.errno != 17:
                 raise
@@ -151,60 +165,29 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
 
     while True:
         try:
+            # Getting the thread json
             try:
                 thread_json = json.loads(load(thread_url, tmp_log, is_quiet))
             except ValueError:
                 print("Problem connecting to {0}. stopping download for thread {1}".format(chan, thread_nb))
+                os.unlink(tmp_log)
                 exit(1)
 
+            # Image download loop
             for post in thread_json["posts"]:
                 if 'filename' in post:
                     if not was_downloaded(post["tim"], tmp_log):
-                        condition_list = []
-                        condition_list.append(extension_condition(condition["ext"], post['ext']))
-                        condition_list.append(width_condition(condition["width"], post['w']))
-                        condition_list.append(height_condition(condition["height"], post['h']))
-                        condition_list.append(filename_condition(condition["filename"], post['filename']))
-                        download_img = all_condition_check(condition_list)
-
-                        if download_img:
-                            try:
-                                pic_url = "{0}{1}{2}".format(image_url,
-                                                             post["tim"],
-                                                             post["ext"])
-                                out_pic = "{0}{1}{2}".format(directory,
-                                                             post["tim"],
-                                                             post["ext"])
-                                urllib.request.urlretrieve(pic_url, out_pic)
-                            except urllib.error.HTTPError as err:
-                                pass
+                        if meet_dl_condition(post, condition):
+                            download_image(image_url, post, out_dir)
                             add_to_downloaded_log(post["tim"], tmp_log)
                             time.sleep(2)
+
                 # Some imageboards allow more than 1 picture per post
                 if 'extra_files' in post:
                     for picture in post["extra_files"]:
                         if not was_downloaded(post["tim"], tmp_log):
-                            condition_list = []
-                            condition_list.append(extension_condition(condition["ext"], post['ext']))
-                            condition_list.append(width_condition(condition["width"], post['w']))
-                            condition_list.append(height_condition(condition["height"], post['h']))
-                            condition_list.append(filename_condition(condition["filename"], post['filename']))
-                            download_img = all_condition_check(condition_list)
-
-                            if download_img:
-                                try:
-                                    pic_url = ("{0}{1}{2}"
-                                               .format(image_url,
-                                                       picture["tim"],
-                                                       post["ext"]))
-                                    out_pic = ("{0}{1}{2}"
-                                               .format(directory,
-                                                       picture["tim"],
-                                                       picture["ext"]))
-                                    urllib.request.urlretrieve(pic_url,
-                                                               out_pic)
-                                except urllib.error.HTTPError as err:
-                                    pass
+                            if meet_dl_condition(post, condition):
+                                download_image(image_url, picture, out_dir)
                                 add_to_downloaded_log(picture["tim"], tmp_log)
                                 time.sleep(2)
             if not is_quiet:
