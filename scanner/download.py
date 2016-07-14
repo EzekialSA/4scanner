@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from scanner import chan_info
+from scanner import chan_info, dupecheck
 import json
 import logging
 import os
@@ -14,25 +14,37 @@ import requests
 import threading
 
 
-def load(url, tmp_log, is_quiet):
+def load(url, downloaded_log, is_quiet):
     response = requests.get(url)
     if response.status_code == 404:
         if not is_quiet:
-            print('{0} thread 404\'d')
-        os.unlink(tmp_log)
+            print('thread 404\'d')
+        os.unlink(downloaded_log)
+        os.unlink(img_hash_log)
         exit(0)
     return response.text
 
 
-def add_to_downloaded_log(img_filename, tmp_log):
-    f = open(tmp_log, "a")
+def create_dir(directory):
+    if not os.path.exists(directory):
+        try:
+            os.makedirs(directory)
+        except OSError as e:  # folder may have been created by other threads
+            if e.errno != 17:
+                print("Cannot create {0}".format(directory))
+                exit(1)
+            pass
+
+
+def add_to_downloaded_log(img_filename, downloaded_log):
+    f = open(downloaded_log, "a")
     f.write("{0}\n".format(img_filename))
     f.close()
 
 
-def was_downloaded(img_filename, tmp_log):
-    if os.path.isfile(tmp_log):
-        f = open(tmp_log, "r")
+def was_downloaded(img_filename, downloaded_log):
+    if os.path.isfile(downloaded_log):
+        f = open(downloaded_log, "r")
         if str(img_filename) in f.read():
             f.close()
             return True
@@ -118,7 +130,7 @@ def all_condition_check(condition_list):
     return True
 
 
-# Return if an fit all search conditions
+# Return True if an image fit all search conditions
 def meet_dl_condition(post, condition):
     condition_list = []
     condition_list.append(extension_condition(condition["ext"], post['ext']))
@@ -128,13 +140,25 @@ def meet_dl_condition(post, condition):
     return all_condition_check(condition_list)
 
 
+def remove_if_duplicate(img_path, img_hash_log):
+    if img_path:
+        img_hash = dupecheck.hash_image(img_path)
+        if dupecheck.is_duplicate(img_hash_log, img_hash):
+            os.remove(img_path)
+        else:
+            dupecheck.add_to_file(img_hash_log, img_hash)
+
+
+# Return downloaded picture URL or false if an error occured
 def download_image(image_url, post_dic, out_dir):
     try:
         pic_url = image_url + str(post_dic["tim"]) + post_dic["ext"]
         out_pic = os.path.join(out_dir, str(post_dic["tim"]) + post_dic["ext"])
         urllib.request.urlretrieve(pic_url, out_pic)
     except urllib.error.HTTPError as err:
-        pass
+        return False
+
+    return out_pic
 
 
 def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, condition):
@@ -149,53 +173,61 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
     thread_subfolder = chan_url_info[1]
     image_subfolder = chan_url_info[2]
 
+    # These URL are the url of the thread
+    # and the base url where images are stored on the imageboard
     thread_url = "{0}{1}{2}{3}.json".format(base_url, board, thread_subfolder, thread_nb)
     image_url = "{0}{1}{2}".format(image_url, board, image_subfolder)
 
-    tmp_log = ("/tmp/4scanner_tmp-{0}-{1}".format(os.getpid(), threading.current_thread().name))
+    tmp_dir = "/tmp/4scanner"
+    curr_time = time.strftime('%d%m%Y-%H%M%S')
+    pid = os.getpid()
+    thread = threading.current_thread().name
+
+    downloaded_log = "{0}/{1}4scanner_dld-{2}-{3}".format(tmp_dir, curr_time, pid, thread)
+    img_hash_log = "{0}/{1}4scanner_hash-{2}-{3}".format(tmp_dir, curr_time, pid, thread)
 
     out_dir = os.path.join(output_folder, 'downloads', chan, board, folder)
-    if not os.path.exists(out_dir):
-        try:
-            os.makedirs(out_dir)
-        except OSError as e:  # folder may have been created by other threads
-            if e.errno != 17:
-                raise
-            pass
 
+    create_dir(tmp_dir)
+    create_dir(out_dir)
+
+    # Fill the hash_log file with hash from image already in the dir
+    dupecheck.hash_img_in_folder(out_dir, img_hash_log)
+
+    # Main download code
     while True:
+        # Getting the thread's json
         try:
-            # Getting the thread json
-            try:
-                thread_json = json.loads(load(thread_url, tmp_log, is_quiet))
-            except ValueError:
-                print("Problem connecting to {0}. stopping download for thread {1}".format(chan, thread_nb))
-                os.unlink(tmp_log)
-                exit(1)
+            thread_json = json.loads(load(thread_url, downloaded_log, is_quiet))
+        except ValueError:
+            print("Problem connecting to {0}. stopping download for thread {1}".format(chan, thread_nb))
+            os.unlink(downloaded_log)
+            os.unlink(img_hash_log)
+            exit(1)
 
-            # Image download loop
-            for post in thread_json["posts"]:
-                if 'filename' in post:
-                    if not was_downloaded(post["tim"], tmp_log):
-                        if meet_dl_condition(post, condition):
-                            download_image(image_url, post, out_dir)
-                            add_to_downloaded_log(post["tim"], tmp_log)
+        # Image download loop
+        for post in thread_json["posts"]:
+            if 'filename' in post:
+                if not was_downloaded(post["tim"], downloaded_log):
+                    if meet_dl_condition(post, condition):
+                        img_path = download_image(image_url, post, out_dir)
+                        add_to_downloaded_log(post["tim"], downloaded_log)
+
+                        remove_if_duplicate(img_path, img_hash_log)
+
+                        time.sleep(2)
+
+            # Some imageboards allow more than 1 picture per post
+            if 'extra_files' in post:
+                for picture in post["extra_files"]:
+                    if not was_downloaded(picture["tim"], downloaded_log):
+                        if meet_dl_condition(picture, condition):
+                            img_path = download_image(image_url, picture, out_dir)
+                            add_to_downloaded_log(picture["tim"], downloaded_log)
+
+                            remove_if_duplicate(img_path, img_hash_log)
+
                             time.sleep(2)
-
-                # Some imageboards allow more than 1 picture per post
-                if 'extra_files' in post:
-                    for picture in post["extra_files"]:
-                        if not was_downloaded(post["tim"], tmp_log):
-                            if meet_dl_condition(post, condition):
-                                download_image(image_url, picture, out_dir)
-                                add_to_downloaded_log(picture["tim"], tmp_log)
-                                time.sleep(2)
-            if not is_quiet:
-                print('.')
-            time.sleep(20)
-        # If the threads 404 while downloading an image
-        except requests.exceptions.HTTPError as err:
-            if not is_quiet:
-                print('thread 404\'d')
-            os.unlink(tmp_log)
-            exit(0)
+        if not is_quiet:
+            print('.')
+        time.sleep(20)
