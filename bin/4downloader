@@ -50,6 +50,8 @@ def main():
     parser.add_argument("-f", "--filename",
                         help="""Download only images containing the string. Ex: filename_1
                              (can be multiple filenames separated by a ,)""")
+    parser.add_argument("-d", "-disable-dupe-check", action='store_true',
+                        help="with -d 4scanner will download images even if a duplicate exist in output folder.")
     parser.add_argument("-q", "--quiet", action='store_true', help="quiet")
     parser.add_argument("-o", "--output", help="Specify output folder")
     args = parser.parse_args()
@@ -82,7 +84,13 @@ def main():
     else:
         chan = "4chan"
 
-    download.download_thread(thread_nb, board, chan, output, folder, quiet, condition)
+    # Check if we download duplicate pictures
+    if not args.d:
+        dupe_check = True
+    else:
+        dupe_check = False
+
+    download.download_thread(thread_nb, board, chan, output, folder, quiet, condition, dupe_check)
 
 
 if __name__ == '__main__':

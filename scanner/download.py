@@ -14,13 +14,12 @@ import requests
 import threading
 
 
-def load(url, downloaded_log, is_quiet):
+def load(url, downloaded_log, img_hash_log, is_quiet):
     response = requests.get(url)
     if response.status_code == 404:
         if not is_quiet:
             print('thread 404\'d')
-        os.unlink(downloaded_log)
-        os.unlink(img_hash_log)
+        remove_tmp_files(img_hash_log, downloaded_log)
         exit(0)
     return response.text
 
@@ -149,6 +148,13 @@ def remove_if_duplicate(img_path, img_hash_log):
             dupecheck.add_to_file(img_hash_log, img_hash)
 
 
+def remove_tmp_files(img_hash_log, downloaded_log):
+    if os.path.isfile(img_hash_log):
+        os.unlink(img_hash_log)
+
+    if os.path.isfile(downloaded_log):
+        os.unlink(downloaded_log)
+
 # Return downloaded picture URL or false if an error occured
 def download_image(image_url, post_dic, out_dir):
     try:
@@ -161,7 +167,7 @@ def download_image(image_url, post_dic, out_dir):
     return out_pic
 
 
-def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, condition):
+def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, condition, check_duplicate):
 
     # Getting info about the chan URL
     chan_url_info = chan_info.get_chan_info(chan)
@@ -198,11 +204,10 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
     while True:
         # Getting the thread's json
         try:
-            thread_json = json.loads(load(thread_url, downloaded_log, is_quiet))
+            thread_json = json.loads(load(thread_url, downloaded_log, img_hash_log, is_quiet))
         except ValueError:
             print("Problem connecting to {0}. stopping download for thread {1}".format(chan, thread_nb))
-            os.unlink(downloaded_log)
-            os.unlink(img_hash_log)
+            remove_tmp_files(img_hash_log, downloaded_log)
             exit(1)
 
         # Image download loop
@@ -213,7 +218,8 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
                         img_path = download_image(image_url, post, out_dir)
                         add_to_downloaded_log(post["tim"], downloaded_log)
 
-                        remove_if_duplicate(img_path, img_hash_log)
+                        if check_duplicate:
+                            remove_if_duplicate(img_path, img_hash_log)
 
                         time.sleep(2)
 
@@ -225,7 +231,8 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
                             img_path = download_image(image_url, picture, out_dir)
                             add_to_downloaded_log(picture["tim"], downloaded_log)
 
-                            remove_if_duplicate(img_path, img_hash_log)
+                            if check_duplicate:
+                                remove_if_duplicate(img_path, img_hash_log)
 
                             time.sleep(2)
         if not is_quiet:

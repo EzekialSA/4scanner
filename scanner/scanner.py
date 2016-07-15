@@ -36,14 +36,15 @@ def scan_thread(keyword, catalog_json):
     return matched_threads
 
 
-def download_thread(thread_id, chan, board, folder, output, condition):
+def download_thread(thread_id, chan, board, folder, output, condition, dupe_check):
     t = threading.Thread(target=download.download_thread, args=(thread_id,
                                                                 board,
                                                                 chan,
                                                                 output,
                                                                 folder,
                                                                 True,
-                                                                condition))
+                                                                condition,
+                                                                dupe_check))
     t.daemon = True
     t.start()
 
@@ -67,6 +68,16 @@ def check_quota(folder, quota_mb):
         print("Quota limit exceeded. Stopping 4scanner.")
         exit(0)
 
+
+def get_check_duplicate(search):
+    if 'check_duplicate' in search:
+        if search['check_duplicate']:
+            return True
+        else:
+            return False
+
+    # duplicate check is on by default
+    return True
 
 def get_condition(search):
     condition = {}
@@ -154,6 +165,8 @@ def scan(keywords_file, output, log_file, quota_mb, wait_time):
             chan = get_imageboard(search)
             # Checking conditions
             condition = get_condition(search)
+            # Check if we need to check for duplicate when downloading
+            dupe_check = get_check_duplicate(search)
             # Getting output folder name
             folder_name = search["folder_name"]
             board = search["board"]
@@ -171,7 +184,7 @@ def scan(keywords_file, output, log_file, quota_mb, wait_time):
                             download_thread(thread_id, chan, board,
                                             folder_name,
                                             output,
-                                            condition)
+                                            condition, dupe_check)
                             add_to_downloaded(thread_id, log_file, output)
             except urllib.error.HTTPError as err:
                 print("Error while opening {0} catalog page. "
