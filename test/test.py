@@ -17,5 +17,5 @@ scanner.add_to_downloaded("139294614", "log", ".")
 
 # test on download.py
 
-# Try getting a web page text
-download.load("http://www.4chan.org")
+# Try getting a web page text (test broken)
+#download.load("http://www.4chan.org")

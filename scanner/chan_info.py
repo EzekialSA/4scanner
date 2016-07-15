@@ -9,7 +9,7 @@ def get_chan_info(chan):
         chan_thread_subfolder = "/thread/"
         chan_image_subfolder = "/"
     elif chan == "lainchan":
-        # lainchan informations (lamba board does not work yet)
+        # lainchan informations
         chan_base_url = "https://lainchan.org/"
         chan_image_base_url = "https://lainchan.org/"
         chan_thread_subfolder = "/res/"
