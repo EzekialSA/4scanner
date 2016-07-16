@@ -57,55 +57,11 @@ Here is an example of what the JSON file should look like:
 ]}
 ```
 
-## Optional search options
+## Search options
 
-- imageboard
+4scanner has a lot of options for downloading only the picture you want. Such as downloading only pictures with a certain width or height, or only pictures with a certain extension.
 
-Specify the imageboard to search.
-Default to 4chan if not specified.
-For example:
-
-``` "imageboard":"4chan" ```
-
-- filename
-
-Download only images containing the the string specified. You can specify more than one filename.
-For example:
-
-``` "filename": "my_filename" ```
-or<br/>
-``` "filename": ["filename_1", "filename_2"] ```
-
-- extension
-
-Download only images with one (or more) extension.
-For example:
-
-``` "extension": ".png" ```
-or<br/>
-``` "extension": [".jpg", ".png"] ```
-
-- width
-
-specify minimum, maximum or exact width of the images to download. Format is >, < or = followed by the number of pixel.
-For example:
-
-``` "width":"=1920" ```
-or<br/>
-``` "width":">1024" ```
-or<br/>
-``` "width":"<600" ```
-
-- height
-
-specify minimum, maximum or exact height of the images to download. Format is >, < or = followed by the number of pixel.
-For example:
-
-``` "height":"=1080" ```
-or<br/>
-``` "height":">1024" ```
-or<br/>
-``` "height":"<600" ```
+To see all available options with examples check out: [OPTIONS.md](OPTIONS.md)
 
 - Example with all optionals options
 ```
@@ -116,13 +72,16 @@ or<br/>
       "board": "v",
       "width":">1000",
       "height":">1000",
+      "filename": "IMG_"
       "extension": [".jpg", ".png"],
-      "keywords": ["tf2", "splatoon", "world of tank"]
+      "keywords": ["tf2", "splatoon", "world of tank"],
+      "check_duplicate": true
     }
 ]}
 ```
 
-This will download images bigger than 1000x1000 which are .jpg or .png
+This will download images bigger than 1000x1000 which are .jpg or .png with a filename containing ``` IMG_ ```
+
 ## Notes
 
 - the keywords search is case insentitive
@@ -135,10 +94,3 @@ a single thread like this:
 
 It will download all images until the thread die.
 You can also download threads from imageboards other than 4chan with ```-i```
-
-## Tips
-
-Since 4chan and many other imageboards are a cesspool of repost, you will probably download duplicates pictures
-very fast. To prevent this you can download fdupes and run it as a cron job to remove duplicates like so:
-
-```fdupes -rdN downloads/```
