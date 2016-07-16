@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/Lacsap-/4scanner.svg?branch=master)](https://travis-ci.org/Lacsap-/4scanner)
 # 4scanner
 
+![4scanner logo](logo/4scanner128.png)
+
 4scanner can search multiple imageboard threads for matching keywords then download all images
 to disk.
 
