@@ -15,7 +15,7 @@ You can create an issue if you want to see other imageboards supported
 
 ## Installing
 
-``` pip3 install 4scanner ```
+` pip3 install 4scanner `
 
 (4scanner is ONLY compatible with python3+)
 
@@ -27,7 +27,7 @@ you want, the board(s) you want to search and the keywords.
 
 After your json file is done you can start 4scanner with:
 
-``` 4scanner file.json ```
+` 4scanner file.json `
 
 it will search all threads for the keywords defined in your json file and
 download all images/webms from threads where a keyword is found. (In the current directory unless you specify one with -o )
@@ -39,18 +39,18 @@ Creating the JSON file is easy, you can use the example.json file as a base.
 Your "Searches" are what 4scanner use to know which board to check for what keywords and the name of the folder where it needs to download the images, you can have as many "Searches" as you want.
 
 Here is an example of what the JSON file should look like:
-```
+```json
 {"searches":[
     {
-      "imageboard":"IMAGEBOARD",
-      "folder_name":"YOUR_FOLDER_NAME",
+      "imageboard": "IMAGEBOARD",
+      "folder_name": "YOUR_FOLDER_NAME",
       "board": "BOARD_LETTER",
       "keywords": ["KEYWORD1", "KEYWORD2"]
     },
 
     {
-      "imageboard":"4chan",
-      "folder_name":"vidya",
+      "imageboard": "4chan",
+      "folder_name": "vidya",
       "board": "v",
       "keywords": ["tf2", "splatoon", "world of tank"]
     }
@@ -64,15 +64,15 @@ Here is an example of what the JSON file should look like:
 To see all available options with examples check out: [OPTIONS.md](OPTIONS.md)
 
 - Example with all optionals options
-```
+```json
 {"searches":[
     {
-      "imageboard":"4chan",
-      "folder_name":"vidya",
+      "imageboard": "4chan",
+      "folder_name": "vidya",
       "board": "v",
-      "width":">1000",
-      "height":">1000",
-      "filename": "IMG_"
+      "width": ">1000",
+      "height": ">1000",
+      "filename": "IMG_",
       "extension": [".jpg", ".png"],
       "keywords": ["tf2", "splatoon", "world of tank"],
       "check_duplicate": true
