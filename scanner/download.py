@@ -198,7 +198,7 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
     create_dir(out_dir)
 
     # Fill the hash_log file with hash from image already in the dir
-    dupecheck.hash_img_in_folder(out_dir, img_hash_log)
+    dupecheck.hash_img_in_folder(out_dir, img_hash_log, check_duplicate)
 
     # Main download code
     while True:

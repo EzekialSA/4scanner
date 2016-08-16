@@ -30,8 +30,12 @@ def is_duplicate(hash_file, img_hash):
     return False
 
 
-def hash_img_in_folder(folder, hash_file):
-    if os.path.isdir(folder):
-        for f in os.listdir(folder):
-            if os.path.isfile(os.path.join(folder, f)):
-                add_to_file(hash_file, hash_image(os.path.join(folder, f)))
+def hash_img_in_folder(folder, hash_file, check_duplicate):
+    if check_duplicate:
+        if os.path.isdir(folder):
+            for f in os.listdir(folder):
+                if os.path.isfile(os.path.join(folder, f)):
+                    add_to_file(hash_file, hash_image(os.path.join(folder, f)))
+    else:
+        with open(hash_file, 'a') as f:
+            f.write("not checking for duplicate\n")
