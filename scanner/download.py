@@ -144,8 +144,10 @@ def remove_if_duplicate(img_path, img_hash_log):
         img_hash = dupecheck.hash_image(img_path)
         if dupecheck.is_duplicate(img_hash_log, img_hash):
             os.remove(img_path)
+            return True
         else:
             dupecheck.add_to_file(img_hash_log, img_hash)
+            return False
 
 
 def remove_tmp_files(img_hash_log, downloaded_log):
@@ -155,11 +157,12 @@ def remove_tmp_files(img_hash_log, downloaded_log):
     if os.path.isfile(downloaded_log):
         os.unlink(downloaded_log)
 
+
 # Return downloaded picture URL or false if an error occured
-def download_image(image_url, post_dic, out_dir):
+def download_image(image_url, post_dic, dl_dir):
     try:
         pic_url = image_url + str(post_dic["tim"]) + post_dic["ext"]
-        out_pic = os.path.join(out_dir, str(post_dic["tim"]) + post_dic["ext"])
+        out_pic = os.path.join(dl_dir, str(post_dic["tim"]) + post_dic["ext"])
         urllib.request.urlretrieve(pic_url, out_pic)
     except urllib.error.HTTPError as err:
         return False
@@ -184,7 +187,7 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
     thread_url = "{0}{1}{2}{3}.json".format(base_url, board, thread_subfolder, thread_nb)
     image_url = "{0}{1}{2}".format(image_url, board, image_subfolder)
 
-    tmp_dir = "/tmp/4scanner"
+    tmp_dir = "/tmp/{0}/".format(os.getpid())
     curr_time = time.strftime('%d%m%Y-%H%M%S')
     pid = os.getpid()
     thread = threading.current_thread().name
@@ -215,11 +218,16 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
             if 'filename' in post:
                 if not was_downloaded(post["tim"], downloaded_log):
                     if meet_dl_condition(post, condition):
-                        img_path = download_image(image_url, post, out_dir)
+                        tmp_pic = download_image(image_url, post, tmp_dir)
+                        final_pic = os.path.join(out_dir, tmp_pic.split('/')[-1])
                         add_to_downloaded_log(post["tim"], downloaded_log)
 
                         if check_duplicate:
-                            remove_if_duplicate(img_path, img_hash_log)
+                            # If picture is not a duplicate copy it to out_dir
+                            if not remove_if_duplicate(tmp_pic, img_hash_log):
+                                os.rename(tmp_pic, final_pic)
+                        else:
+                            os.rename(tmp_pic, final_pic)
 
                         time.sleep(2)
 
@@ -228,11 +236,17 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
                 for picture in post["extra_files"]:
                     if not was_downloaded(picture["tim"], downloaded_log):
                         if meet_dl_condition(picture, condition):
-                            img_path = download_image(image_url, picture, out_dir)
+                            tmp_pic = download_image(image_url, picture, tmp_dir)
+                            final_pic = os.path.join(out_dir, tmp_pic.split('/')[-1])
                             add_to_downloaded_log(picture["tim"], downloaded_log)
 
                             if check_duplicate:
-                                remove_if_duplicate(img_path, img_hash_log)
+                                # If picture is not a duplicate copy it to out_dir
+                                if not remove_if_duplicate(tmp_pic, img_hash_log):
+                                    os.rename(tmp_pic, final_pic)
+                            else:
+                                os.rename(tmp_pic, final_pic)
+
 
                             time.sleep(2)
         if not is_quiet:
