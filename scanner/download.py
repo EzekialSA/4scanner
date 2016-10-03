@@ -12,6 +12,7 @@ import urllib
 import http.client
 import requests
 import threading
+import shutil
 
 
 def load(url, downloaded_log, img_hash_log, is_quiet):
@@ -225,9 +226,9 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
                         if check_duplicate:
                             # If picture is not a duplicate copy it to out_dir
                             if not remove_if_duplicate(tmp_pic, img_hash_log):
-                                os.rename(tmp_pic, final_pic)
+                                shutil.move(tmp_pic, final_pic)
                         else:
-                            os.rename(tmp_pic, final_pic)
+                            shutil.move(tmp_pic, final_pic)
 
                         time.sleep(2)
 
@@ -243,9 +244,9 @@ def download_thread(thread_nb, board, chan, output_folder, folder, is_quiet, con
                             if check_duplicate:
                                 # If picture is not a duplicate copy it to out_dir
                                 if not remove_if_duplicate(tmp_pic, img_hash_log):
-                                    os.rename(tmp_pic, final_pic)
+                                    shutil.move(tmp_pic, final_pic)
                             else:
-                                os.rename(tmp_pic, final_pic)
+                                shutil.move(tmp_pic, final_pic)
 
 
                             time.sleep(2)
