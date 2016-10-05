@@ -8,6 +8,7 @@ from scanner import download, chan_info
 import subprocess
 import urllib.request
 import threading
+import httplib
 
 
 def get_catalog_json(board, chan):
