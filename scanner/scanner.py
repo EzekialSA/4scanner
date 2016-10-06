@@ -8,13 +8,18 @@ from scanner import download, chan_info
 import subprocess
 import urllib.request
 import threading
+import http.client
 
 
 def get_catalog_json(board, chan):
     chan_base_url = chan_info.get_chan_info(chan)[0]
     catalog = urllib.request.urlopen(
               "{0}{1}/catalog.json".format(chan_base_url, board))
-    return json.loads(catalog.read().decode("utf8"))
+    try:
+        catalog_data = catalog.read()
+    except http.client.IncompleteRead as err:
+        catalog_data = err.partial
+    return json.loads(catalog_data.decode("utf8"))
 
 
 def scan_thread(keyword, catalog_json):
