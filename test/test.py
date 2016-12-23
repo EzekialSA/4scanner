@@ -9,16 +9,16 @@ print("Testing scanner.py")
 print("--------------------------------------------------------")
 print("Testing: scanner.get_catalog_json                      -")
 print("--------------------------------------------------------")
-#catalog_json = scanner.get_catalog_json("a", "4chan")
+catalog_json = scanner.get_catalog_json("a", "4chan")
 print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
 
 print("--------------------------------------------------------")
 print("Testing: scanner.scan_thread                           -")
 print("--------------------------------------------------------")
 
-# list_of_threads = scanner.scan_thread("anime", catalog_json)
-# for i in list_of_threads:
-#     print(i)
+list_of_threads = scanner.scan_thread("anime", catalog_json)
+for i in list_of_threads:
+     print(i)
 
 print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
 
@@ -286,4 +286,175 @@ print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
 
 print('\x1b[6;30;42m' + 'All test OK for chan_info.py' + '\x1b[0m')
 
-print("!!! download.py not tested yet !!!")
+print("Testing download.py")
+
+print("--------------------------------------------------------")
+print("!!! download.load not tested yet !!!                   -")
+print("--------------------------------------------------------")
+
+print("--------------------------------------------------------")
+print("Testing: download.create_dir                           -")
+print("--------------------------------------------------------")
+
+# Creating directory
+download.create_dir("test_create_dir")
+if not os.path.exists("test_create_dir"):
+    print("'test_create_dir' was not created")
+    exit(1)
+
+# Testing again because the function should not crash if folder already exist
+download.create_dir("test_create_dir")
+
+print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
+
+print("--------------------------------------------------------")
+print("Testing: download.add_to_downloaded_log                -")
+print("Testing: download.was_downloaded                       -")
+print("--------------------------------------------------------")
+
+os.system("echo "" > test_download_log.txt")
+download.add_to_downloaded_log("my_filename", "test_download_log.txt")
+if 'my_filename' not in open("test_download_log.txt").read():
+    print("'my_filename' is not in test_download_log.txt")
+    exit(1)
+
+downloaded = download.was_downloaded("my_filename", "test_download_log.txt")
+if not downloaded:
+    print("'returned' should be True")
+    exit(1)
+
+downloaded = download.was_downloaded("other_filename", "test_download_log.txt")
+if downloaded:
+    print("'returned' should be False")
+    exit(1)
+
+print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
+
+print("--------------------------------------------------------")
+print("Testing: download.extension_condition                  -")
+print("--------------------------------------------------------")
+
+if not download.extension_condition([".jpg"], ".jpg"):
+    print("same extension should return True")
+    exit(1)
+
+if download.extension_condition([".jpg"], ".png"):
+    print("different extension should return False")
+    exit(1)
+
+print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
+
+print("--------------------------------------------------------")
+print("Testing: download.filename_condition                   -")
+print("--------------------------------------------------------")
+
+if not download.filename_condition(["IMG_"], "IMG_2345.jpg"):
+    print("IMG_ is in IMG_2345, should return True")
+    exit(1)
+
+if download.filename_condition(["PIC"], "IMG_2345.jpg"):
+    print("PIC is not in IMG_2345, should return False")
+    exit(1)
+
+print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
+
+print("--------------------------------------------------------")
+print("Testing: download.width_condition                      -")
+print("--------------------------------------------------------")
+
+if not download.width_condition("=100", 100):
+    print("100 is equal to 100, should be True")
+    exit(1)
+
+if download.width_condition("=100", 101):
+    print("100 is not equal to 101, should be False")
+    exit(1)
+
+if not download.width_condition(">100", 101):
+    print("101 is greater than 100, should be True")
+    exit(1)
+
+if download.width_condition(">100", 99):
+    print("99 is not greater than 100, should be False")
+    exit(1)
+
+if not download.width_condition("<100", 99):
+    print("99 is lower than 100, should be True")
+    exit(1)
+
+if download.width_condition("<100", 101):
+    print("101 is not lower than 100, should be False")
+    exit(1)
+
+print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
+
+
+print("--------------------------------------------------------")
+print("Testing: download.all_condition_check                  -")
+print("--------------------------------------------------------")
+
+all_true = [True, True, True, True]
+one_false = [True, False, True, True]
+all_false = [False, False, False, False]
+
+if not download.all_condition_check(all_true):
+    print("all conditions are True, should return True")
+    exit(1)
+
+if download.all_condition_check(one_false):
+    print("one condition is False, should return False")
+    exit(1)
+
+if download.all_condition_check(all_false):
+    print("all conditions are False, should return False")
+    exit(1)
+
+print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
+
+print("--------------------------------------------------------")
+print("!!! download.meet_dl_condition not tested yet !!!      -")
+print("--------------------------------------------------------")
+
+print("--------------------------------------------------------")
+print("Testing: download.remove_if_duplicate                  -")
+print("--------------------------------------------------------")
+
+os.system("cp test/test_img.png duplicate.png")
+os.system("echo b3ce9cb3aefc5e240b4295b406ce8b9a > test_hash_log_dupe.txt")
+
+os.system("cp test/test_img.png not_duplicate.png")
+os.system("echo not_our_img_md5 > test_hash_log_not_dupe.txt")
+
+download.remove_if_duplicate("duplicate.png", "test_hash_log_dupe.txt")
+if os.path.isfile("duplicate.png"):
+    print("duplicate.png should have been deleted.")
+    exit(1)
+
+
+download.remove_if_duplicate("not_duplicate.png", "test_hash_log_not_dupe.txt")
+if not os.path.isfile("not_duplicate.png"):
+    print("not_duplicate.png should not have been deleted.")
+    exit(1)
+
+print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
+
+print("--------------------------------------------------------")
+print("Testing: download.download_image                       -")
+print("--------------------------------------------------------")
+
+img_url= "https://github.com/Lacsap-/4scanner/raw/master/logo/"
+post_dic = {'tim': '4scanner128', 'ext': '.png'}
+
+file_path = download.download_image(img_url, post_dic, ".")
+if not os.path.isfile(file_path):
+    print("4scanner128.png should have been downloaded.")
+    exit(1)
+
+print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
+
+print("--------------------------------------------------------")
+print("!!! download.download_thread not tested yet !!!        -")
+print("--------------------------------------------------------")
+
+print('\x1b[6;30;42m' + 'All test OK for download.py' + '\x1b[0m')
+print('\x1b[6;30;42m' + 'SUCCESS' + '\x1b[0m')
