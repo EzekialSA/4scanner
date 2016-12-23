@@ -38,7 +38,7 @@ print("--------------------------------------------------------")
 print("Testing: scanner.folder_size_mb                        -")
 print("--------------------------------------------------------")
 
-#Creating a 10mb file in a subfolder of a folder
+#Creating a 15mb file in a subfolder of a folder
 os.system("mkdir folder_size_test")
 os.system("mkdir folder_size_test/subfolder")
 os.system("dd if=/dev/zero of=folder_size_test/subfolder/15mbfile bs=15000000 count=1")
