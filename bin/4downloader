@@ -3,7 +3,7 @@
 import argparse
 import os
 import scanner
-from scanner import download
+from scanner import downloader
 
 
 def condition_check(args):
@@ -90,7 +90,8 @@ def main():
     else:
         dupe_check = False
 
-    download.download_thread(thread_nb, board, chan, output, folder, quiet, condition, dupe_check)
+    thread_downloader = downloader.downloader(thread_nb, board, chan, output, folder, quiet, condition, dupe_check)
+    thread_downloader.download()
 
 
 if __name__ == '__main__':
