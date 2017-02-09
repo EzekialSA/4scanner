@@ -48,7 +48,7 @@ def main():
 
     # Checking for sleep time
     if args.wait_time:
-        wait_time = args.sleep_time * 60
+        wait_time = args.wait_time * 60
     else:
         wait_time = 300
 
