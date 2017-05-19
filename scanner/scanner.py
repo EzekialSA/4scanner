@@ -4,7 +4,7 @@ import time
 import json
 import os
 import re
-from scanner import download, chan_info
+from scanner import downloader, chan_info
 import subprocess
 import urllib.request
 import threading
@@ -42,14 +42,8 @@ def scan_thread(keyword, catalog_json):
 
 
 def download_thread(thread_id, chan, board, folder, output, condition, dupe_check):
-    t = threading.Thread(target=download.download_thread, args=(thread_id,
-                                                                board,
-                                                                chan,
-                                                                output,
-                                                                folder,
-                                                                True,
-                                                                condition,
-                                                                dupe_check))
+    thread_downloader = downloader.downloader(thread_id, board,chan, output, folder, True, condition, dupe_check)
+    t = threading.Thread(target=thread_downloader.download)
     t.daemon = True
     t.start()
 
