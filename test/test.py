@@ -2,7 +2,7 @@
 
 import json
 import os
-from scanner import scanner, dupecheck, chan_info, download
+from scanner import scanner, dupecheck, chan_info, downloader
 
 print("Testing scanner.py")
 
@@ -28,7 +28,7 @@ print("--------------------------------------------------------")
 
 print("--------------------------------------------------------")
 print("Testing: scanner.add_to_downloaded                     -")
-print("--------------------------------------------------------")
+print("----------------------------------------------thread_id----------")
 
 scanner.add_to_downloaded("139294614", "log", ".")
 
@@ -288,6 +288,10 @@ print('\x1b[6;30;42m' + 'All test OK for chan_info.py' + '\x1b[0m')
 
 print("Testing download.py")
 
+# Creating download object
+condition = {"ext": False, "filename": False, "width": False, "height": False, }
+download = downloader.downloader(list_of_threads[0], 'a',"4chan", ".", "testci", True, condition, True)
+
 print("--------------------------------------------------------")
 print("!!! download.load not tested yet !!!                   -")
 print("--------------------------------------------------------")
@@ -313,17 +317,17 @@ print("Testing: download.was_downloaded                       -")
 print("--------------------------------------------------------")
 
 os.system("echo "" > test_download_log.txt")
-download.add_to_downloaded_log("my_filename", "test_download_log.txt")
-if 'my_filename' not in open("test_download_log.txt").read():
-    print("'my_filename' is not in test_download_log.txt")
+download.add_to_downloaded_log("my_filename")
+if 'my_filename' not in open(download.downloaded_log).read():
+    print("'my_filename' is not in {0}".format(download.downloaded_log))
     exit(1)
 
-downloaded = download.was_downloaded("my_filename", "test_download_log.txt")
+downloaded = download.was_downloaded("my_filename")
 if not downloaded:
     print("'returned' should be True")
     exit(1)
 
-downloaded = download.was_downloaded("other_filename", "test_download_log.txt")
+downloaded = download.was_downloaded("other_filename")
 if downloaded:
     print("'returned' should be False")
     exit(1)
@@ -420,18 +424,17 @@ print("Testing: download.remove_if_duplicate                  -")
 print("--------------------------------------------------------")
 
 os.system("cp test/test_img.png duplicate.png")
-os.system("echo b3ce9cb3aefc5e240b4295b406ce8b9a > test_hash_log_dupe.txt")
+os.system("echo b3ce9cb3aefc5e240b4295b406ce8b9a > {0}".format(download.img_hash_log))
 
-os.system("cp test/test_img.png not_duplicate.png")
-os.system("echo not_our_img_md5 > test_hash_log_not_dupe.txt")
-
-download.remove_if_duplicate("duplicate.png", "test_hash_log_dupe.txt")
+download.remove_if_duplicate("duplicate.png")
 if os.path.isfile("duplicate.png"):
     print("duplicate.png should have been deleted.")
     exit(1)
 
+os.system("cp test/test_img.png not_duplicate.png")
+os.system("echo not_our_img_md5 > {0}".format(download.img_hash_log))
 
-download.remove_if_duplicate("not_duplicate.png", "test_hash_log_not_dupe.txt")
+download.remove_if_duplicate("not_duplicate.png")
 if not os.path.isfile("not_duplicate.png"):
     print("not_duplicate.png should not have been deleted.")
     exit(1)
@@ -439,16 +442,16 @@ if not os.path.isfile("not_duplicate.png"):
 print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
 
 print("--------------------------------------------------------")
-print("Testing: download.download_image                       -")
+print("!!! download.download_image not tested yet !!!         -")
 print("--------------------------------------------------------")
 
-img_url= "https://github.com/Lacsap-/4scanner/raw/master/logo/"
-post_dic = {'tim': '4scanner128', 'ext': '.png'}
+#img_url= "https://github.com/Lacsap-/4scanner/raw/master/logo/"
+#post_dic = {'tim': '4scanner128', 'ext': '.png'}
 
-file_path = download.download_image(img_url, post_dic, ".")
-if not os.path.isfile(file_path):
-    print("4scanner128.png should have been downloaded.")
-    exit(1)
+#file_path = download.download_image(img_url, post_dic, ".")
+#if not os.path.isfile(file_path):
+#    print("4scanner128.png should have been downloaded.")
+#    exit(1)
 
 print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
 

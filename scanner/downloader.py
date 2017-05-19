@@ -48,13 +48,13 @@ class downloader:
         self.check_duplicate = check_duplicate
         self.is_quiet = is_quiet
 
-
-    # Main download function
-    def download(self):
-
         # Creating the tmp and output directory
         self.create_dir(self.tmp_dir)
         self.create_dir(self.out_dir)
+
+
+    # Main download function
+    def download(self):
 
         # Fill the hash_log file with hash from image already in the dir
         dupecheck.hash_img_in_folder(self.out_dir, self.img_hash_log, self.check_duplicate)
