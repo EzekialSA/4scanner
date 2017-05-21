@@ -4,7 +4,7 @@ import time
 import json
 import os
 import re
-from scanner import downloader, chan_info
+from scanner import downloader, imageboard_info
 import subprocess
 import urllib.request
 import threading
@@ -12,7 +12,7 @@ import http.client
 
 
 def get_catalog_json(board, chan):
-    chan_base_url = chan_info.get_chan_info(chan)[0]
+    chan_base_url = imageboard_info.imageboard_info(chan).base_url
     catalog = urllib.request.urlopen(
               "{0}{1}/catalog.json".format(chan_base_url, board))
     try:
@@ -116,9 +116,8 @@ def get_condition(search):
 def get_imageboard(search):
     if 'imageboard' in search:
         chan = search["imageboard"]
-        if not chan_info.get_chan_info(chan):
-            print("{0} is not supported.".format(chan))
-            exit(1)
+        # will raise error if nor supported
+        imageboard_info.imageboard_info(chan)
     else:
         # default
         chan = "4chan"

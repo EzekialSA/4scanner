@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import argparse
-from scanner import chan_info, dupecheck
+
+from scanner import imageboard_info, dupecheck
 import json
 import logging
 import os
@@ -16,16 +16,14 @@ import shutil
 
 class downloader:
 
-    def __init__(self, thread_nb, board, chan, output_folder, folder, is_quiet, condition, check_duplicate):
-        # Getting info about the chan URL
-        chan_url_info = chan_info.get_chan_info(chan)
-        if not chan_url_info:
-            print("{0} does not exist or is not supported.".format(chan))
-            exit(1)
-        base_url = chan_url_info[0]
-        image_url = chan_url_info[3]
-        thread_subfolder = chan_url_info[1]
-        image_subfolder = chan_url_info[2]
+    def __init__(self, thread_nb, board, imageboard, output_folder, folder, is_quiet, condition, check_duplicate):
+        # Getting info about the imageboard URL
+        ib_info = imageboard_info.imageboard_info(imageboard)
+
+        base_url = ib_info.base_url
+        image_url = ib_info.image_base_url
+        thread_subfolder = ib_info.thread_subfolder
+        image_subfolder = ib_info.image_subfolder
 
         # These URL are the url of the thread
         # and the base url where images are stored on the imageboard
@@ -40,10 +38,10 @@ class downloader:
         self.downloaded_log = "{0}/{1}4scanner_dld-{2}-{3}".format(self.tmp_dir, self.curr_time, self.pid, self.thread)
         self.img_hash_log = "{0}/{1}4scanner_hash-{2}-{3}".format(self.tmp_dir, self.curr_time, self.pid, self.thread)
 
-        self.out_dir = os.path.join(output_folder, 'downloads', chan, board, folder)
+        self.out_dir = os.path.join(output_folder, 'downloads', imageboard, board, folder)
 
         self.thread_nb = thread_nb
-        self.chan = chan
+        self.imageboard = imageboard
         self.condition = condition
         self.check_duplicate = check_duplicate
         self.is_quiet = is_quiet
@@ -64,7 +62,7 @@ class downloader:
             try:
                 thread_json = json.loads(self.get_thread_json())
             except ValueError:
-                print("Problem connecting to {0}. stopping download for thread {1}".format(self.chan, self.thread_nb))
+                print("Problem connecting to {0}. stopping download for thread {1}".format(self.imageboard, self.thread_nb))
                 self.remove_tmp_files()
                 exit(1)
 

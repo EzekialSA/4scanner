@@ -2,7 +2,7 @@
 
 import json
 import os
-from scanner import scanner, dupecheck, chan_info, downloader
+from scanner import scanner, dupecheck, imageboard_info, downloader
 
 print("Testing scanner.py")
 
@@ -224,67 +224,67 @@ print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
 
 print('\x1b[6;30;42m' + 'All test OK for dupecheck.py' + '\x1b[0m')
 
-print("Testing chan_info.py")
+print("Testing imageboard_info.py")
 
 print("--------------------------------------------------------")
-print("Testing: chan_info.get_chan_info                       -")
+print("Testing: imageboard_info.get_imageboard_info                       -")
 print("--------------------------------------------------------")
 
-info_4chan = chan_info.get_chan_info("4chan")
-if info_4chan[0] != "http://a.4cdn.org/":
+info_4chan = imageboard_info.imageboard_info("4chan")
+if info_4chan.base_url != "http://a.4cdn.org/":
     print("chan_base_url wrong for 4chan")
     exit(1)
 
-if info_4chan[1] != "/thread/":
+if info_4chan.thread_subfolder != "/thread/":
     print("chan_thread_subfolder wrong for 4chan")
     exit(1)
 
-if info_4chan[2] != "/":
+if info_4chan.image_subfolder != "/":
     print("chan_image_subfolder wrong for 4chan")
     exit(1)
 
-if info_4chan[3] != "http://i.4cdn.org/":
+if info_4chan.image_base_url != "http://i.4cdn.org/":
     print("chan_image_base_url wrong for 4chan")
     exit(1)
 
-info_lainchan = chan_info.get_chan_info("lainchan")
-if info_lainchan[0] != "https://lainchan.org/":
+info_lainchan = imageboard_info.imageboard_info("lainchan")
+if info_lainchan.base_url != "https://lainchan.org/":
     print("chan_base_url wrong for lainchan")
     exit(1)
 
-if info_lainchan[1] != "/res/":
+if info_lainchan.thread_subfolder != "/res/":
     print("chan_thread_subfolder wrong for lainchan")
     exit(1)
 
-if info_lainchan[2] != "/src/":
+if info_lainchan.image_subfolder != "/src/":
     print("chan_image_subfolder wrong for lainchan")
     exit(1)
 
-if info_lainchan[3] != "https://lainchan.org/":
+if info_lainchan.image_base_url != "https://lainchan.org/":
     print("chan_image_base_url wrong for lainchan")
     exit(1)
 
 
-info_uboachan = chan_info.get_chan_info("uboachan")
-if info_uboachan[0] != "https://uboachan.net/":
+info_uboachan = imageboard_info.imageboard_info("uboachan")
+if info_uboachan.base_url != "https://uboachan.net/":
     print("chan_base_url wrong for uboachan")
     exit(1)
 
-if info_uboachan[1] != "/res/":
+if info_uboachan.thread_subfolder != "/res/":
     print("chan_thread_subfolder wrong for uboachan")
     exit(1)
 
-if info_uboachan[2] != "/src/":
+if info_uboachan.image_subfolder != "/src/":
     print("chan_image_subfolder wrong for uboachan")
     exit(1)
 
-if info_uboachan[3] != "https://uboachan.net/":
+if info_uboachan.image_base_url != "https://uboachan.net/":
     print("chan_image_base_url wrong for uboachan")
     exit(1)
 
 print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
 
-print('\x1b[6;30;42m' + 'All test OK for chan_info.py' + '\x1b[0m')
+print('\x1b[6;30;42m' + 'All test OK for imageboard_info.py' + '\x1b[0m')
 
 print("Testing download.py")
 
