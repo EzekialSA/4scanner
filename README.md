@@ -1,4 +1,4 @@
-# 4scanner [![Build Status](https://travis-ci.org/Lacsap-/4scanner.svg?branch=master)](https://travis-ci.org/Lacsap-/4scanner)
+# 4scanner [![Build Status](https://travis-ci.org/pboardman/4scanner.svg?branch=master)](https://travis-ci.org/pboardman/4scanner)
 
 ![4scanner logo](logo/4scanner128.png)
 
