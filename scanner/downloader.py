@@ -38,7 +38,7 @@ class downloader:
         self.downloaded_log = "{0}/{1}4scanner_dld-{2}-{3}".format(self.tmp_dir, self.curr_time, self.pid, self.thread)
         self.img_hash_log = "{0}/{1}4scanner_hash-{2}-{3}".format(self.tmp_dir, self.curr_time, self.pid, self.thread)
 
-        self.out_dir = os.path.join(output_folder, 'downloads', imageboard, board, folder)
+        self.out_dir = os.path.join(output_folder, 'downloads', imageboard, board, folder, str(thread_nb))
 
         self.thread_nb = thread_nb
         self.imageboard = imageboard
