@@ -4,8 +4,8 @@
 import json
 import logging
 import os
-from scanner import imageboard_info, dupecheck, scanner
-from scanner.config import DB_FILE
+from scanner import imageboard_info, dupecheck
+from scanner.config import DB_FILE, currently_downloading
 import sqlite3
 import sys
 import re

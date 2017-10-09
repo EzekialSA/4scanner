@@ -5,15 +5,12 @@ import json
 import os
 import re
 from scanner import downloader, imageboard_info
-from scanner.config import DB_FILE
+from scanner.config import DB_FILE, currently_downloading
 import sqlite3
 import subprocess
 import urllib.request
 import threading
 import http.client
-
-# Global variable used to keep track of what is downloading
-currently_downloading = []
 
 
 def get_catalog_json(board, chan):
