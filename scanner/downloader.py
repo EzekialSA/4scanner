@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 
-from scanner import imageboard_info, dupecheck
 import json
 import logging
 import os
+from scanner import imageboard_info, dupecheck
+from scanner.config import DB_FILE, currently_downloading
+import sqlite3
 import sys
 import re
 import time
@@ -36,12 +38,12 @@ class downloader:
         self.thread = threading.current_thread().name
 
         self.downloaded_log = "{0}/{1}4scanner_dld-{2}-{3}".format(self.tmp_dir, self.curr_time, self.pid, self.thread)
-        self.img_hash_log = "{0}/{1}4scanner_hash-{2}-{3}".format(self.tmp_dir, self.curr_time, self.pid, self.thread)
 
         self.out_dir = os.path.join(output_folder, 'downloads', imageboard, board, folder, str(thread_nb))
 
         self.thread_nb = thread_nb
         self.imageboard = imageboard
+        self.board = board
         self.condition = condition
         self.check_duplicate = check_duplicate
         self.is_quiet = is_quiet
@@ -53,16 +55,13 @@ class downloader:
 
     # Main download function
     def download(self):
-
-        # Fill the hash_log file with hash from image already in the dir
-        dupecheck.hash_img_in_folder(self.out_dir, self.img_hash_log, self.check_duplicate)
-
         while True:
             # Getting the thread's json
             try:
                 thread_json = json.loads(self.get_thread_json())
             except ValueError:
                 print("Problem connecting to {0}. stopping download for thread {1}".format(self.imageboard, self.thread_nb))
+                self.remove_thread_from_downloading()
                 self.remove_tmp_files()
                 exit(1)
 
@@ -107,12 +106,32 @@ class downloader:
             time.sleep(20)
 
 
+    def remove_thread_from_downloading(self):
+        # In a try except because 4downloader do not store threads in this list
+        try:
+            scanner.currently_downloading.remove(self.thread_nb)
+        except NameError as e:
+            pass
+
+
+    def add_thread_to_downloaded(self):
+        conn = sqlite3.connect(DB_FILE)
+        c = conn.cursor()
+
+        c.execute("INSERT INTO Downloaded_Thread (Thread_Number, Imageboard, Board) VALUES (?, ?, ?)",
+                 (self.thread_nb, self.imageboard, self.board))
+
+        conn.commit()
+        conn.close()
+
+
     def get_thread_json(self):
         response = requests.get(self.thread_url)
         if response.status_code == 404:
             if not self.is_quiet:
                 print('thread 404\'d')
-            self.remove_tmp_files()
+            self.remove_thread_from_downloading()
+            self.add_thread_to_downloaded()
             exit(0)
         return response.text
 
@@ -235,18 +254,15 @@ class downloader:
     def remove_if_duplicate(self, img_path):
         if img_path:
             img_hash = dupecheck.hash_image(img_path)
-            if dupecheck.is_duplicate(self.img_hash_log, img_hash):
+            if dupecheck.is_duplicate(img_hash):
                 os.remove(img_path)
                 return True
             else:
-                dupecheck.add_to_file(self.img_hash_log, img_hash)
+                dupecheck.add_to_db(img_hash, self.thread_nb)
                 return False
 
 
     def remove_tmp_files(self):
-        if os.path.isfile(self.img_hash_log):
-            os.unlink(self.img_hash_log)
-
         if os.path.isfile(self.downloaded_log):
             os.unlink(self.downloaded_log)
 

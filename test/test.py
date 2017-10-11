@@ -27,14 +27,6 @@ print("!!! scanner.download_thread not tested yet !!!         -")
 print("--------------------------------------------------------")
 
 print("--------------------------------------------------------")
-print("Testing: scanner.add_to_downloaded                     -")
-print("----------------------------------------------thread_id----------")
-
-scanner.add_to_downloaded("139294614", "log", ".")
-
-print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
-
-print("--------------------------------------------------------")
 print("Testing: scanner.folder_size_mb                        -")
 print("--------------------------------------------------------")
 
@@ -159,75 +151,19 @@ if hash != "b3ce9cb3aefc5e240b4295b406ce8b9a":
 print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
 
 print("--------------------------------------------------------")
-print("Testing: dupecheck.add_to_file                         -")
+print("!!! dupecheck.add_to_db not tested yet !!!             -")
 print("--------------------------------------------------------")
 
-os.system("echo "" > hash_test_file.txt")
-
-dupecheck.add_to_file("hash_test_file.txt", "some_hash_to_write")
-
-if 'some_hash_to_write' not in open("hash_test_file.txt").read():
-    print("the string was not written to hash_test_file.txt")
-    exit(1)
-
-print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
-
 print("--------------------------------------------------------")
-print("Testing: dupecheck.is_duplicate                        -")
+print("!!! dupecheck.is_duplicate not tested yet !!!          -")
 print("--------------------------------------------------------")
-
-os.system("echo some_hash > hash_test_file.txt")
-
-# Test when hash is in file
-is_dupe = dupecheck.is_duplicate("hash_test_file.txt", "some_hash")
-if not is_dupe:
-    print("is_dupe should be True")
-    exit(1)
-
-# Test when hash is NOT in file
-is_dupe = dupecheck.is_duplicate("hash_test_file.txt", "hash_not_in_file")
-if is_dupe:
-    print("is_dupe should be False")
-    exit(1)
-
-print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
-
-print("--------------------------------------------------------")
-print("Testing: dupecheck.hash_img_in_folder                  -")
-print("--------------------------------------------------------")
-
-# Creating a folder with some files to hash
-os.system("mkdir test_download_folder")
-os.system("echo file1 > test_download_folder/file1.txt")
-os.system("echo file2 > test_download_folder/file2.txt")
-os.system("echo file3 > test_download_folder/file3.txt")
-os.system("echo "" > hash_test_file1.txt")
-os.system("echo "" > hash_test_file2.txt")
-
-dupecheck.hash_img_in_folder("test_download_folder", "hash_test_file1.txt", True)
-if '5149d403009a139c7e085405ef762e1a' not in open("hash_test_file1.txt").read():
-    print("file1 hash not in hash_test_file1.txt")
-    exit(1)
-if '3d709e89c8ce201e3c928eb917989aef' not in open("hash_test_file1.txt").read():
-    print("file2 hash not in hash_test_file1.txt")
-    exit(1)
-if '60b91f1875424d3b4322b0fdd0529d5d' not in open("hash_test_file1.txt").read():
-    print("file3 has not in hash_test_file1.txt")
-    exit(1)
-
-dupecheck.hash_img_in_folder("test_download_folder", "hash_test_file2.txt", False)
-if 'not checking for duplicate' not in open("hash_test_file2.txt").read():
-    print("'not checking for duplicate' should be in hash_test_file2.txt")
-    exit(1)
-
-print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
 
 print('\x1b[6;30;42m' + 'All test OK for dupecheck.py' + '\x1b[0m')
 
 print("Testing imageboard_info.py")
 
 print("--------------------------------------------------------")
-print("Testing: imageboard_info.get_imageboard_info                       -")
+print("Testing: imageboard_info.get_imageboard_info           -")
 print("--------------------------------------------------------")
 
 info_4chan = imageboard_info.imageboard_info("4chan")
@@ -420,26 +356,8 @@ print("!!! download.meet_dl_condition not tested yet !!!      -")
 print("--------------------------------------------------------")
 
 print("--------------------------------------------------------")
-print("Testing: download.remove_if_duplicate                  -")
+print("!!! download.remove_if_duplicate not tested yet !!!    -")
 print("--------------------------------------------------------")
-
-os.system("cp test/test_img.png duplicate.png")
-os.system("echo b3ce9cb3aefc5e240b4295b406ce8b9a > {0}".format(download.img_hash_log))
-
-download.remove_if_duplicate("duplicate.png")
-if os.path.isfile("duplicate.png"):
-    print("duplicate.png should have been deleted.")
-    exit(1)
-
-os.system("cp test/test_img.png not_duplicate.png")
-os.system("echo not_our_img_md5 > {0}".format(download.img_hash_log))
-
-download.remove_if_duplicate("not_duplicate.png")
-if not os.path.isfile("not_duplicate.png"):
-    print("not_duplicate.png should not have been deleted.")
-    exit(1)
-
-print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
 
 print("--------------------------------------------------------")
 print("!!! download.download_image not tested yet !!!         -")

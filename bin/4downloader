@@ -3,7 +3,7 @@
 import argparse
 import os
 import scanner
-from scanner import downloader
+from scanner import downloader, dupecheck
 
 
 def condition_check(args):

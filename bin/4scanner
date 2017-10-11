@@ -3,7 +3,7 @@
 import argparse
 import os
 import scanner
-from scanner import scanner
+from scanner import scanner, dupecheck
 import time
 
 
@@ -52,9 +52,8 @@ def main():
     else:
         wait_time = 300
 
-    log_file = "downloaded-{0}.txt".format(time.strftime('%d%m%Y_%H%M'))
 
-    scanner.scan(args.keywords_file, output, log_file, quota_mb, wait_time)
+    scanner.scan(args.keywords_file, output, quota_mb, wait_time)
 
 
 if __name__ == '__main__':

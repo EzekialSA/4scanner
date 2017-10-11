@@ -5,6 +5,8 @@ import json
 import os
 import re
 from scanner import downloader, imageboard_info
+from scanner.config import DB_FILE, currently_downloading
+import sqlite3
 import subprocess
 import urllib.request
 import threading
@@ -48,10 +50,19 @@ def download_thread(thread_id, chan, board, folder, output, condition, dupe_chec
     t.start()
 
 
-def add_to_downloaded(id, log_file, output):
-    download_log = open("{0}/{1}".format(output, log_file), "a")
-    download_log.write("{0}\n".format(id))
+def was_downloaded(thread_nb):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
 
+    c.execute("SELECT Thread_Number FROM Downloaded_Thread WHERE Thread_Number = ?", (thread_nb,))
+    result = c.fetchone()
+
+    conn.close()
+
+    if result:
+        return True
+    else:
+        return False
 
 def folder_size_mb(folder):
     total_size = 0
@@ -140,17 +151,13 @@ def get_keyword(search):
     return keywords_array
 
 
-def scan(keywords_file, output, log_file, quota_mb, wait_time):
+def scan(keywords_file, output, quota_mb, wait_time):
     while True:
         if quota_mb:
             check_quota(output, quota_mb)
 
         curr_time = time.strftime('%d%b%Y-%H%M%S')
         print("{0} Searching threads...".format(curr_time))
-
-        dl_log = open("{0}/{1}".format(output, log_file), "a")
-        dl_log.write(time.strftime('Execution date {0}\n'.format(curr_time)))
-        dl_log.close()
 
         try:
             json_file = json.load(open(keywords_file))
@@ -176,14 +183,14 @@ def scan(keywords_file, output, log_file, quota_mb, wait_time):
                 for keyword in keywords:
                     threads_id = scan_thread(keyword, catalog_json)
 
-                    dl_log = open("{0}/{1}".format(output, log_file)).read()
                     for thread_id in list(set(threads_id)):
-                        if str(thread_id) not in dl_log:
+                        if thread_id not in currently_downloading and not was_downloaded(thread_id):
                             download_thread(thread_id, chan, board,
                                             folder_name,
                                             output,
                                             condition, dupe_check)
-                            add_to_downloaded(thread_id, log_file, output)
+                        # Used to keep track of what is currently downloading
+                        currently_downloading.append(thread_id)
             except urllib.error.HTTPError as err:
                 print("Error while opening {0} catalog page. "
                       "Retrying during next scan.".format(board))

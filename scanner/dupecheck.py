@@ -2,6 +2,8 @@
 
 import hashlib
 import os
+import sqlite3
+from scanner.config import DB_FILE
 
 
 def hash_image(img_location):
@@ -15,27 +17,26 @@ def hash_image(img_location):
         return m.hexdigest()
 
 
-def add_to_file(hash_file, img_hash):
-    with open(hash_file, 'a') as f:
-        f.write("{0}\n".format(img_hash))
+def add_to_db(img_hash, thread_nb):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+
+    c.execute("INSERT INTO Image_Hash (hash, Thread_Number) VALUES (?,?)", (img_hash, thread_nb))
+
+    conn.commit()
+    conn.close()
 
 
-def is_duplicate(hash_file, img_hash):
-    if os.path.isfile(hash_file):
-        with open(hash_file, "r") as f:
-            for line in f:
-                if img_hash in line:
-                    return True
+def is_duplicate(img_hash):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
 
-    return False
+    c.execute("SELECT Hash FROM Image_Hash WHERE Hash = ?", (img_hash,))
+    result = c.fetchone()
 
+    conn.close()
 
-def hash_img_in_folder(folder, hash_file, check_duplicate):
-    if check_duplicate:
-        if os.path.isdir(folder):
-            for f in os.listdir(folder):
-                if os.path.isfile(os.path.join(folder, f)):
-                    add_to_file(hash_file, hash_image(os.path.join(folder, f)))
+    if result:
+        return True
     else:
-        with open(hash_file, 'a') as f:
-            f.write("not checking for duplicate\n")
+        return False
