@@ -7,7 +7,7 @@ to disk.
 
 ## Supported imageboards
 - 4chan
-- lainchan (use "lam" for the λ board)
+- lainchan
 - uboachan
 
 You can create an issue if you want to see other imageboards supported
@@ -20,8 +20,8 @@ You can create an issue if you want to see other imageboards supported
 
 ## How to
 
-the first thing you need to do is create a simple json file with the folders names
-you want, the board(s) you want to search and the keywords.
+the first thing you need to do is create a simple json file with the directories names
+you want, the boards you want to search and the keywords.
 (see the json file section for more details)
 
 After your json file is done you can start 4scanner with:
