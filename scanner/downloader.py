@@ -18,7 +18,7 @@ import shutil
 
 class downloader:
 
-    def __init__(self, thread_nb, board, imageboard, output_folder, folder, is_quiet, condition, check_duplicate):
+    def __init__(self, thread_nb, board, imageboard, output_folder, folder, is_quiet, condition, check_duplicate, tag_list):
         # Getting info about the imageboard URL
         ib_info = imageboard_info.imageboard_info(imageboard)
 
@@ -47,6 +47,7 @@ class downloader:
         self.condition = condition
         self.check_duplicate = check_duplicate
         self.is_quiet = is_quiet
+        self.tag_list = tag_list
 
         # Creating the tmp and output directory
         self.create_dir(self.tmp_dir)
@@ -78,8 +79,10 @@ class downloader:
                                 # If picture is not a duplicate copy it to out_dir
                                 if not self.remove_if_duplicate(tmp_pic):
                                     shutil.move(tmp_pic, final_pic)
+                                    self.add_tag_file(final_pic + ".txt")
                             else:
                                 shutil.move(tmp_pic, final_pic)
+                                self.add_tag_file(final_pic + ".txt")
 
                             time.sleep(2)
 
@@ -96,8 +99,10 @@ class downloader:
                                     # If picture is not a duplicate copy it to out_dir
                                     if not self.remove_if_duplicate(tmp_pic):
                                         shutil.move(tmp_pic, final_pic)
+                                        self.add_tag_file(final_pic + ".txt")
                                 else:
                                     shutil.move(tmp_pic, final_pic)
+                                    self.add_tag_file(final_pic + ".txt")
 
 
                                 time.sleep(2)
@@ -277,3 +282,9 @@ class downloader:
             return False
 
         return out_pic
+
+    def add_tag_file(self, tag_file):
+        if self.tag_list:
+            with open(tag_file, 'w') as f:
+                for tag in self.tag_list:
+                    f.write(tag + "\n") 
