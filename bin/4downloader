@@ -46,13 +46,14 @@ def main():
                         help="Specify width. format: >256, <256 or =256")
     parser.add_argument("-E", "--extension",
                         help="""Download only specific(s) extension(s). Ex: .jpg
-                             (can be multiple extensions separated by a ,)""")
+                             (can be multiple extensions separated by ,)""")
     parser.add_argument("-f", "--filename",
                         help="""Download only images containing the string. Ex: filename_1
                              (can be multiple filenames separated by a ,)""")
     parser.add_argument("-d", "-disable-dupe-check", action='store_true',
                         help="with -d 4scanner will download images even if a duplicate exist in output folder.")
     parser.add_argument("-q", "--quiet", action='store_true', help="quiet")
+    parser.add_argument("-t", "--tag", help="list of tags for importing easily into Hydrus Network, separated by ,")
     parser.add_argument("-o", "--output", help="Specify output folder")
     args = parser.parse_args()
 
@@ -90,7 +91,12 @@ def main():
     else:
         dupe_check = False
 
-    thread_downloader = downloader.downloader(thread_nb, board, chan, output, folder, quiet, condition, dupe_check)
+    if args.tag:
+        tag = args.tag.split(',')
+    else:
+        tag = None
+
+    thread_downloader = downloader.downloader(thread_nb, board, chan, output, folder, quiet, condition, dupe_check, tag)
     thread_downloader.download()
 
 

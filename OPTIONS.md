@@ -17,10 +17,10 @@ Example:
 
 ## folder_name (required)
 
-The name of the folder where the picture will be downloaded.
+The name of the folder where the images will be downloaded.
 
 Example:
-- `"folder_name": "cat_pictures" `
+- `"folder_name": "cat_images" `
 
 
 ## imageboard (optional)
@@ -75,9 +75,20 @@ Example:
 - `"height": ">1024" `
 - `"height": "=1080" `
 
+## tag (optional)
+This option was designed to easily import images downloaded from 4scanner into [Hydrus Network](hydrusnetwork.github.io/hydrus/).
+
+When the `tag` option is set it will create a text file for each image downloaded.
+
+In the Hydrus files import dialog you need to go to `add tags based on filename` then check the `try to load tags from neighbouring .txt files` box.
+
+Example:
+- `["mytag"]`
+- `["hyrule", "character:link", "game:zelda"]`
+
 ## check_duplicate (optional)
 
-Can be true or false. If true, 4scanner will check if the picture already exist in the download directory and won't download it. If false no attempt will be made to not download duplicate pictures.
+Can be true or false. If true, 4scanner will check if the image already exist in the download directory and won't download it. If false no attempt will be made to not download duplicate images.
 
 Default: true
 

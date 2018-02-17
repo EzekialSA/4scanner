@@ -43,8 +43,8 @@ def scan_thread(keyword, catalog_json):
     return matched_threads
 
 
-def download_thread(thread_id, chan, board, folder, output, condition, dupe_check):
-    thread_downloader = downloader.downloader(thread_id, board,chan, output, folder, True, condition, dupe_check)
+def download_thread(thread_id, chan, board, folder, output, condition, dupe_check, tag_list):
+    thread_downloader = downloader.downloader(thread_id, board,chan, output, folder, True, condition, dupe_check, tag_list)
     t = threading.Thread(target=thread_downloader.download)
     t.daemon = True
     t.start()
@@ -127,13 +127,21 @@ def get_condition(search):
 def get_imageboard(search):
     if 'imageboard' in search:
         chan = search["imageboard"]
-        # will raise error if nor supported
+        # will raise error if not supported
         imageboard_info.imageboard_info(chan)
     else:
         # default
         chan = "4chan"
 
     return chan
+
+def get_tag_list(search):
+    if 'tag' in search:
+        tag = search["tag"]
+    else:
+        tag = None
+
+    return tag
 
 
 def get_keyword(search):
@@ -174,6 +182,8 @@ def scan(keywords_file, output, quota_mb, wait_time):
             dupe_check = get_check_duplicate(search)
             # Getting output folder name
             folder_name = search["folder_name"]
+            # Get tag list (if any)
+            tag_list = get_tag_list(search)
             board = search["board"]
             keywords = get_keyword(search)
 
@@ -186,9 +196,9 @@ def scan(keywords_file, output, quota_mb, wait_time):
                     for thread_id in list(set(threads_id)):
                         if thread_id not in currently_downloading and not was_downloaded(thread_id):
                             download_thread(thread_id, chan, board,
-                                            folder_name,
-                                            output,
-                                            condition, dupe_check)
+                                            folder_name, output,
+                                            condition, dupe_check,
+                                            tag_list)
                         # Used to keep track of what is currently downloading
                         currently_downloading.append(thread_id)
             except urllib.error.HTTPError as err:

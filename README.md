@@ -2,8 +2,7 @@
 
 ![4scanner logo](logo/4scanner128.png)
 
-4scanner can search multiple imageboards threads for matching keywords then download all images
-to disk.
+4scanner can search multiple imageboards threads for matching keywords then download all images to disk.
 
 ## Supported imageboards
 - 4chan
@@ -58,9 +57,11 @@ Here is an example of what the JSON file should look like:
 
 ## Search options
 
-4scanner has a lot of options for downloading only the picture you want. Such as downloading only pictures with a certain width or height, or only pictures with a certain extension.
+4scanner has a lot of options for downloading only the images you want. Such as downloading only images with a certain width or height, or only images with a certain extension.
 
 To see all available options with examples check out: [OPTIONS.md](OPTIONS.md)
+
+[Hydrus Network](hydrusnetwork.github.io/hydrus/) users: check out the `tag` [option](OPTIONS.md) to automatically tag your images on import
 
 - Example with all optionals options
 ```json
@@ -73,6 +74,7 @@ To see all available options with examples check out: [OPTIONS.md](OPTIONS.md)
       "height": ">1000",
       "filename": "IMG_",
       "extension": [".jpg", ".png"],
+      "tag": ["game"]
       "keywords": ["tf2", "splatoon", "world of tank"],
       "check_duplicate": true
     }
