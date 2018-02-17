@@ -74,7 +74,7 @@ To see all available options with examples check out: [OPTIONS.md](OPTIONS.md)
       "height": ">1000",
       "filename": "IMG_",
       "extension": [".jpg", ".png"],
-      "tag": ["game"]
+      "tag": ["game"],
       "keywords": ["tf2", "splatoon", "world of tank"],
       "check_duplicate": true
     }
