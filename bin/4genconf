@@ -1,0 +1,189 @@
+#!/usr/bin/env python3
+
+import json
+import os
+
+
+def create_conf(final_dic):
+    config_dic = {}
+
+    # Set mandatory configs
+    config_dic = set_imageboard(config_dic)
+    config_dic = set_board(config_dic)
+    config_dic = set_keywords(config_dic)
+    config_dic = set_folder_name(config_dic)
+
+    # Set filename
+    answer = input(
+        "Do you want to download only image containing a certain [filename]? [y/N]")
+    if answer == 'y':
+        config_dic = set_filename(config_dic)
+
+    answer = input(
+        "Do you want to download only image with a certain file [extension] Ex. .png? [y/N]")
+    if answer == 'y':
+        config_dic = set_extension(config_dic)
+
+    answer = input(
+        "Do you want to download only image with a certain [width] Ex. <600 or =1920? [y/N]")
+    if answer == 'y':
+        config_dic = set_width(config_dic)
+
+    answer = input(
+        "Do you want to download only image with a certain [height] Ex. <600 or =1080? [y/N]")
+    if answer == 'y':
+        config_dic = set_height(config_dic)
+
+    answer = input(
+        "Do you want to set [tags] to help with importing in Hydrus? (If you don't now what this is choose No) [y/N]")
+    if answer == 'y':
+        config_dic = set_tags(config_dic)
+
+    final_dic['searches'].append(config_dic)
+
+    return final_dic
+
+
+def set_imageboard(dic):
+    imageboard = input("What [imageboard] do you want to search? [4chan] :")
+    if not imageboard:
+        dic['imageboard'] = "4chan"
+    else:
+        dic['imageboard'] = imageboard
+
+    return dic
+
+
+def set_board(dic):
+    board = ""
+    while not board:
+        board = input("Which [board] do you want to scan? ex. v for 4chan's video game board :")
+
+    dic['board'] = board
+
+    return dic
+
+
+def set_folder_name(dic):
+    dl_dir = input("What will be the output [folder name]? [dl_dir] :")
+    if not dl_dir:
+        dic['folder_name'] = "dl_dir"
+    else:
+        dic['folder_name'] = dl_dir
+
+    return dic
+
+
+def set_keywords(dic):
+    keywords = ""
+    while not keywords:
+        keywords = input("Which keywords do you want to search for? Separated by ; Ex. cat;dog;caturday :")
+
+    dic['keywords'] = keywords.split(';')
+
+    return dic
+
+
+def set_filename(dic):
+    filename = ""
+    while not filename:
+        filename = input("What is the string you to look for in the images filenames? Ex. IMG_ :")
+
+    dic['filename'] = filename
+
+    return dic
+
+
+def set_width(dic):
+    width = ""
+    while not width:
+        width = input("What is the width rule you want to set? Ex. =1920 or <600 or >240 :")
+
+    dic['width'] = width
+
+    return dic
+
+
+def set_height(dic):
+    height = ""
+    while not height:
+        height = input("What is the height rule you want to set? Ex. =1080 or <600 or >240 :")
+
+    dic['height'] = height
+
+    return dic
+
+
+def set_extension(dic):
+    extension = ""
+    while not extension:
+        extension = input("Which file extension do you want to search for? Separated by ; Ex. .png;.webm;.jpg :")
+
+    dic['extension'] = extension.split(';')
+
+    return dic
+
+
+def set_tags(dic):
+    tags = ""
+    while not tags:
+        tags = input("Which tags do you want to set for importing in Hydrus? Separated by ; Ex. hyrule;link;the legend of zelda :")
+
+    dic['tags'] = tags.split(';')
+
+    return dic
+
+
+def set_check_duplicate(dic):
+    imageboard = input("Do you want to turn on duplicate check? [Y/n] :")
+    if not imageboard:
+        dic['imageboard'] = "4chan"
+    else:
+        dic['imageboard'] = imageboard
+
+    return dic
+
+
+def dump_to_file(dic):
+    out_name = "genconf.json"
+
+    i = 1
+    while os.path.isfile(out_name):
+        out_name = "genconf_{}.json".format(i)
+        i += 1
+
+    with open(out_name, 'w') as outfile:
+        json.dump(dic, outfile, indent = 4)
+
+    return out_name
+
+
+def main():
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    print("~4scanner configuration generator~")
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    print("This small utility will generate a 4scanner config in your current directory.")
+    print("for info on the options: https://github.com/pboardman/4scanner/blob/master/OPTIONS.md")
+    print("-----")
+
+    final_dic = {}
+    final_dic['searches'] = []
+
+    while True:
+        final_dic = create_conf(final_dic)
+        answer = input("Do you want to add another search to your config file? [y/N] :")
+        if answer.lower() != 'y':
+            break
+
+    # Create the file
+    print("Writting file...")
+    out_name = dump_to_file(final_dic)
+    print("File [{}] written successfully!".format(out_name))
+
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
