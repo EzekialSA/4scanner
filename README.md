@@ -30,7 +30,11 @@ After your json file is done you can start 4scanner with:
 it will search all threads for the keywords defined in your json file and
 download all images/webms from threads where a keyword is found. (In the current directory unless you specify one with -o )
 
-## Creating your JSON file
+## Creating your JSON file via the 4genconf script (easy)
+
+The `4genconf` utility is now installed as of 4scanner 1.5.1. This utility will ask you simple questions about what you want to download and generate a configuration file for you!
+
+## Creating your JSON file manually
 
 Creating the JSON file is easy, you can use the example.json file as a base.
 
