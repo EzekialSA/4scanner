@@ -65,7 +65,7 @@ Here is an example of what the JSON file should look like:
 
 To see all available options with examples check out: [OPTIONS.md](OPTIONS.md)
 
-[Hydrus Network](hydrusnetwork.github.io/hydrus/) users: check out the `tag` [option](OPTIONS.md) to automatically tag your images on import
+[Hydrus Network](https://hydrusnetwork.github.io/hydrus/) users: check out the `tag` [option](OPTIONS.md) to automatically tag your images on import
 
 - Example with all optionals options
 ```json
