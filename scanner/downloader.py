@@ -18,7 +18,7 @@ import shutil
 
 class downloader:
 
-    def __init__(self, thread_nb, board, imageboard, output_folder, folder, is_quiet, condition, check_duplicate, tag_list):
+    def __init__(self, thread_nb, board, imageboard, output_folder, folder, is_quiet, condition, check_duplicate, tag_list, logger):
         # Getting info about the imageboard URL
         ib_info = imageboard_info.imageboard_info(imageboard)
 
@@ -53,15 +53,18 @@ class downloader:
         self.create_dir(self.tmp_dir)
         self.create_dir(self.out_dir)
 
+        self.logger = logger
+
 
     # Main download function
     def download(self):
+        self.logger.info("{}: Starting download.".format(self.thread_url))
         while True:
             # Getting the thread's json
             try:
                 thread_json = json.loads(self.get_thread_json())
             except ValueError:
-                print("Problem connecting to {0}. stopping download for thread {1}".format(self.imageboard, self.thread_nb))
+                self.logger.critical("{}: Problem connecting to {0}. stopping download for thread {1}".format(self.thread_url, self.imageboard, self.thread_nb))
                 self.remove_thread_from_downloading()
                 self.remove_tmp_files()
                 exit(1)
@@ -69,7 +72,7 @@ class downloader:
             # Checking if thread was archived, if it is it will be removed after the download loop
             if thread_json["posts"][0].get("archived"):
                 if not self.is_quiet:
-                    print("Thread {} is archived, getting images then quitting.".format(self.thread_nb))
+                    self.logger.info("{}: Thread is archived, getting images then quitting.".format(self.thread_url))
                 archived = True
             else:
                 archived = False
@@ -114,11 +117,9 @@ class downloader:
 
 
                                 time.sleep(2)
-            if not self.is_quiet:
-                print('.')
-
             if archived:
                 self.remove_thread_from_downloading()
+                self.remove_tmp_files()
                 exit(0)
     
             time.sleep(20)
@@ -147,7 +148,7 @@ class downloader:
         response = requests.get(self.thread_url)
         if response.status_code == 404:
             if not self.is_quiet:
-                print('thread 404\'d')
+                self.logger.info("{}: thread 404\'d, stopping download".format(self.thread_url))
             self.remove_thread_from_downloading()
             self.add_thread_to_downloaded()
             exit(0)
@@ -160,7 +161,8 @@ class downloader:
                 os.makedirs(directory)
             except OSError as e:  # folder may have been created by other threads
                 if e.errno != 17:
-                    print("Cannot create {0}".format(directory))
+                    self.logger.critical("{}: Cannot create {}".format(self.thread_url, directory))
+                    self.remove_thread_from_downloading()
                     exit(1)
                 pass
 
@@ -219,8 +221,7 @@ class downloader:
                 if int(post_width) > int(condition_width.split(">")[-1]):
                     return True
             else:
-                print("width need to be in this format:")
-                print(">1024, <256 or =1920")
+                self.logger.critical("{}: width need to be in this format: >1024, <256 or =1920".format(self.thread_url))
                 exit(1)
         else:
             # Always return true if condition was not specified
@@ -241,8 +242,7 @@ class downloader:
                 if int(post_height) > int(condition_height.split(">")[-1]):
                     return True
             else:
-                print("height need to be in this format:")
-                print(">1024, <256 or =1080")
+                self.logger.critical("{}: height need to be in this format: >1024, <256 or =1080".format(self.thread_url))
                 exit(1)
         else:
             # Always return true if condition was not specified

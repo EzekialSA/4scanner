@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
 
 import argparse
+import logging
 import os
 import scanner
+from datetime import datetime
 from scanner import downloader, dupecheck
+
+
+def configure_logging(log_file, level=logging.INFO):
+    logging.basicConfig(format='[%(asctime)s] -- %(levelname)s: %(message)s', datefmt='%Y%m%d-%H%M%S', filename=log_file, level=level)
+    stdout_handler = logging.StreamHandler()
+    stdout_handler.setFormatter(logging.Formatter(fmt='[%(asctime)s] -- %(levelname)s: %(message)s', datefmt='%Y%m%d-%H%M%S'))
+    logging.getLogger().addHandler(stdout_handler)
+    return logging.getLogger()
 
 
 def condition_check(args):
@@ -96,7 +106,10 @@ def main():
     else:
         tag = None
 
-    thread_downloader = downloader.downloader(thread_nb, board, chan, output, folder, quiet, condition, dupe_check, tag)
+    # Setting up logger
+    logger = configure_logging("./{}_4downloader.log".format(datetime.now().strftime('%Y%m%d_%H%M%S'))) 
+
+    thread_downloader = downloader.downloader(thread_nb, board, chan, output, folder, quiet, condition, dupe_check, tag, logger)
     thread_downloader.download()
 
 
