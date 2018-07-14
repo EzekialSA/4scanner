@@ -66,6 +66,14 @@ class downloader:
                 self.remove_tmp_files()
                 exit(1)
 
+            # Checking if thread was archived, if it is it will be removed after the download loop
+            if thread_json["posts"][0].get("archived"):
+                if not self.is_quiet:
+                    print("Thread {} is archived, getting images then quitting.".format(self.thread_nb))
+                archived = True
+            else:
+                archived = False
+
             # Image download loop
             for post in thread_json["posts"]:
                 if 'filename' in post:
@@ -108,6 +116,11 @@ class downloader:
                                 time.sleep(2)
             if not self.is_quiet:
                 print('.')
+
+            if archived:
+                self.remove_thread_from_downloading()
+                exit(0)
+    
             time.sleep(20)
 
 
