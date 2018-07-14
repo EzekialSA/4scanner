@@ -1,10 +1,20 @@
 #!/usr/bin/env python3
 
 import argparse
+import logging
 import os
 import scanner
-from scanner import scanner, dupecheck
 import time
+from scanner import thread_scanner
+from datetime import datetime
+
+
+def configure_logging(log_file, level=logging.INFO):
+    logging.basicConfig(format='[%(asctime)s] -- %(levelname)s: %(message)s', datefmt='%Y%m%d-%H%M%S', filename=log_file, level=level)
+    stdout_handler = logging.StreamHandler()
+    stdout_handler.setFormatter(logging.Formatter(fmt='[%(asctime)s] -- %(levelname)s: %(message)s', datefmt='%Y%m%d-%H%M%S'))
+    logging.getLogger().addHandler(stdout_handler)
+    return logging.getLogger()
 
 
 def main():
@@ -52,9 +62,11 @@ def main():
     else:
         wait_time = 300
 
+    # Setting up logger
+    logger = configure_logging("./{}_4scanner.log".format(datetime.now().strftime('%Y%m%d_%H%M%S'))) 
 
-    scanner.scan(args.keywords_file, output, quota_mb, wait_time)
-
+    t_scanner = thread_scanner.thread_scanner(args.keywords_file, output, quota_mb, wait_time, logger)
+    t_scanner.scan()
 
 if __name__ == '__main__':
     try:
