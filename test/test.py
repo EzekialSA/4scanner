@@ -1,33 +1,35 @@
 #!/usr/bin/env python3
 
 import json
+import logging
 import os
-from scanner import scanner, dupecheck, imageboard_info, downloader
+from scanner import thread_scanner, dupecheck, imageboard_info, downloader
 
 print("Testing scanner.py")
 
+t_scanner = thread_scanner.thread_scanner("test/test_config.json", "/tmp/", 200, 1, logging.getLogger())
 print("--------------------------------------------------------")
-print("Testing: scanner.get_catalog_json                      -")
+print("Testing: t_scanner.get_catalog_json                    -")
 print("--------------------------------------------------------")
-catalog_json = scanner.get_catalog_json("a", "4chan")
+catalog_json = t_scanner.get_catalog_json("a", "4chan")
 print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
 
 print("--------------------------------------------------------")
-print("Testing: scanner.scan_thread                           -")
+print("Testing: t_scanner.scan_thread                         -")
 print("--------------------------------------------------------")
 
-list_of_threads = scanner.scan_thread("anime", catalog_json)
+list_of_threads = t_scanner.scan_thread("anime", catalog_json)
 for i in list_of_threads:
      print(i)
 
 print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
 
 print("--------------------------------------------------------")
-print("!!! scanner.download_thread not tested yet !!!         -")
+print("!!! t_scanner.download_thread not tested yet !!!       -")
 print("--------------------------------------------------------")
 
 print("--------------------------------------------------------")
-print("Testing: scanner.folder_size_mb                        -")
+print("Testing: t_scanner.dir_size_mb                         -")
 print("--------------------------------------------------------")
 
 #Creating a 15mb file in a subfolder of a folder
@@ -36,7 +38,7 @@ os.system("mkdir folder_size_test/subfolder")
 os.system("dd if=/dev/zero of=folder_size_test/subfolder/15mbfile bs=15000000 count=1")
 
 # Getting folder size
-size = scanner.folder_size_mb("folder_size_test")
+size = t_scanner.dir_size_mb("folder_size_test")
 if int(size) != 15:
     print(size)
     exit(1)
@@ -63,10 +65,10 @@ for search in json_file["searches"]:
     search_list.append(search)
 
 # Test on the first search with all optionals parameters
-duplicate1  = scanner.get_check_duplicate(search_list[0])
-condition1  = scanner.get_condition(search_list[0])
-imageboard1 = scanner.get_imageboard(search_list[0])
-keyword1    = scanner.get_keyword(search_list[0])
+duplicate1  = t_scanner.get_check_duplicate(search_list[0])
+condition1  = t_scanner.get_condition(search_list[0])
+imageboard1 = t_scanner.get_imageboard(search_list[0])
+keyword1    = t_scanner.get_keyword(search_list[0])
 
 if not duplicate1:
     print("duplicate1 should be True but is False")
@@ -96,10 +98,10 @@ if keyword1 != ['keyword1', 'keyword2', 'keyword3']:
     print("keyword1 should be equal to ['keyword1', 'keyword2', 'keyword3']")
     exit(1)
 
-duplicate2  = scanner.get_check_duplicate(search_list[1])
-condition2  = scanner.get_condition(search_list[1])
-imageboard2 = scanner.get_imageboard(search_list[1])
-keyword2    = scanner.get_keyword(search_list[1])
+duplicate2  = t_scanner.get_check_duplicate(search_list[1])
+condition2  = t_scanner.get_condition(search_list[1])
+imageboard2 = t_scanner.get_imageboard(search_list[1])
+keyword2    = t_scanner.get_keyword(search_list[1])
 
 if not duplicate2:
     print("duplicate2 should be True but is False")
@@ -226,7 +228,7 @@ print("Testing download.py")
 
 # Creating download object
 condition = {"ext": False, "filename": False, "width": False, "height": False, }
-download = downloader.downloader(list_of_threads[0], 'a',"4chan", ".", "testci", True, condition, True, ["travistag1", "ci:travistag2"])
+download = downloader.downloader(list_of_threads[0], 'a',"4chan", ".", "testci", True, condition, True, ["travistag1", "ci:travistag2"], logging.getLogger())
 
 print("--------------------------------------------------------")
 print("!!! download.load not tested yet !!!                   -")
