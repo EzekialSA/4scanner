@@ -20,9 +20,10 @@ You can create an issue if you want to see other imageboards supported
 ## Running via Docker
 Create a config (detail below), name it config.json and drop it where you would like to download the images. Then run a container:
 
-`docker run -v /can/be/anywhere:/output lacsap/4scanner`
+`docker run -v /can/be/anywhere:/output -v /anywhere/else:/root/.4scanner lacsap/4scanner`
 
-`/can/be/anywhere` can be anywhere on your computer (This is the dorectory where you need to put the config.json)
+`/can/be/anywhere` Can be anywhere on your computer, images will be downloaded there (This is the dorectory where you need to put the config.json)
+`/anywhere/else` Can be anywhere on your computer, it will contain the sqlite3 database 4scanner use to keep track of downloaded threads and duplicate
 
 ## How to
 
