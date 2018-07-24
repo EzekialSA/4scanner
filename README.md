@@ -18,7 +18,7 @@ You can create an issue if you want to see other imageboards supported
 (4scanner is ONLY compatible with python3+)
 
 ## Running via Docker
-Create a config (detail below), name it config.json and drop it where you would like to download your photo. Then run a container:
+Create a config (detail below), name it config.json and drop it where you would like to download the images. Then run a container:
 
 `docker run -v /can/be/anywhere:/output lacsap/4scanner`
 
