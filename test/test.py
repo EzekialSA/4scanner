@@ -18,7 +18,7 @@ print("--------------------------------------------------------")
 print("Testing: t_scanner.scan_thread                         -")
 print("--------------------------------------------------------")
 
-list_of_threads = t_scanner.scan_thread("anime", catalog_json)
+list_of_threads = t_scanner.scan_thread("anime", catalog_json, False)
 for i in list_of_threads:
      print(i)
 
