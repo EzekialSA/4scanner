@@ -10,7 +10,8 @@
       "imageboard":"4chan",
       "folder_name":"vidya",
       "board": "vg",
-      "keywords": ["tf2", "splatoon", "world of warcraft"]
+      "keywords": ["tf2", "splatoon", "world of warcraft"],
+      "subject_only": true
     },
 
     {
