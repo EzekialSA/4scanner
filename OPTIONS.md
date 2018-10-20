@@ -86,6 +86,15 @@ Example:
 - `["mytag"]`
 - `["hyrule", "character:link", "game:zelda"]`
 
+## subject_only (optional)
+Can be true or false, can be used to search only the `subject` of the thread. Note that a lot of posters do not put anything in the title.
+
+Default: false
+
+Example:
+- `"subject_only": true `
+- `"subject_only": false `
+
 ## check_duplicate (optional)
 
 Can be true or false. If true, 4scanner will check if the image already exist in the download directory and won't download it. If false no attempt will be made to not download duplicate images.

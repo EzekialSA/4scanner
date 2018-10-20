@@ -32,21 +32,22 @@ class thread_scanner:
         return json.loads(catalog_data.decode("utf8"))
 
 
-    def scan_thread(self, keyword, catalog_json):
+    def scan_thread(self, keyword, catalog_json, subject_only):
         # Check each thread, threads who contains the keyword are returned
         matched_threads = []
         for i in range(len(catalog_json)):
             for thread in catalog_json[i]["threads"]:
                 regex = r'\b{0}\b'.format(keyword)
-                # Search thread title
+                # Search thread subject
                 if 'sub' in thread:
                     if re.search(regex, str(thread["sub"]), re.IGNORECASE):
                         matched_threads.append(thread["no"])
 
-                # Search OPs post body
-                if 'com' in thread:
-                    if re.search(regex, str(thread["com"]), re.IGNORECASE):
-                        matched_threads.append(thread["no"])
+                if not subject_only:
+                    # Search OPs post body
+                    if 'com' in thread:
+                        if re.search(regex, str(thread["com"]), re.IGNORECASE):
+                            matched_threads.append(thread["no"])
 
         return matched_threads
 
@@ -151,6 +152,15 @@ class thread_scanner:
 
         return tag
 
+    
+    def get_subject_only(self, search):
+        if 'subject_only' in search:
+            subject_only = search["subject_only"]
+        else:
+            subject_only = None
+
+        return subject_only
+
 
     def get_keyword(self, search):
         if 'keywords' in search:
@@ -191,6 +201,8 @@ class thread_scanner:
                 folder_name = search["folder_name"]
                 # Get tag list (if any)
                 tag_list = self.get_tag_list(search)
+                # if this is true we will search only the subject field
+                subject_only = self.get_subject_only(search)
                 board = search["board"]
                 keywords = self.get_keyword(search)
 
@@ -198,7 +210,7 @@ class thread_scanner:
                     catalog_json = self.get_catalog_json(board, chan)
 
                     for keyword in keywords:
-                        threads_id = self.scan_thread(keyword, catalog_json)
+                        threads_id = self.scan_thread(keyword, catalog_json, subject_only)
 
                         for thread_id in list(set(threads_id)):
                             if thread_id not in currently_downloading and not self.was_downloaded(thread_id):

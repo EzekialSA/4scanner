@@ -88,7 +88,8 @@ To see all available options with examples check out: [OPTIONS.md](OPTIONS.md)
       "extension": [".jpg", ".png"],
       "tag": ["game"],
       "keywords": ["tf2", "splatoon", "world of tank"],
-      "check_duplicate": true
+      "check_duplicate": true,
+      "subject_only": false
     }
 ]}
 ```
