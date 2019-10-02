@@ -104,7 +104,7 @@ class downloader:
                         if not self.was_downloaded(picture["tim"]):
                             if self.meet_dl_condition(picture):
                                 tmp_pic = self.download_image(picture)
-                                final_pic = os.path.join(out_dir, tmp_pic.split('/')[-1])
+                                final_pic = os.path.join(self.out_dir, tmp_pic.split('/')[-1])
                                 self.add_to_downloaded_log(picture["tim"])
 
                                 if self.check_duplicate:
