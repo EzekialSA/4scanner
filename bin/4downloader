@@ -63,6 +63,7 @@ def main():
     parser.add_argument("-d", "-disable-dupe-check", action='store_true',
                         help="with -d 4scanner will download images even if a duplicate exist in output folder.")
     parser.add_argument("-q", "--quiet", action='store_true', help="quiet")
+    parser.add_argument("-s", "--single-run", action='store_true', help="Download all pictures and exit, do not wait for thread to 404")
     parser.add_argument("-t", "--tag", help="list of tags for importing easily into Hydrus Network, separated by ,")
     parser.add_argument("-o", "--output", help="Specify output folder")
     args = parser.parse_args()
@@ -107,9 +108,9 @@ def main():
         tag = None
 
     # Setting up logger
-    logger = configure_logging("./{}_4downloader.log".format(datetime.now().strftime('%Y%m%d_%H%M%S'))) 
+    logger = configure_logging("./{}_4downloader.log".format(datetime.now().strftime('%Y%m%d_%H%M%S')))
 
-    thread_downloader = downloader.downloader(thread_nb, board, chan, output, folder, quiet, condition, dupe_check, tag, logger)
+    thread_downloader = downloader.downloader(thread_nb, board, chan, output, folder, quiet, condition, dupe_check, tag, logger, single_run=args.single_run)
     thread_downloader.download()
 
 

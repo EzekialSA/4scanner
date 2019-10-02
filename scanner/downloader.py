@@ -17,8 +17,7 @@ import threading
 import shutil
 
 class downloader:
-
-    def __init__(self, thread_nb, board, imageboard, output_folder, folder, is_quiet, condition, check_duplicate, tag_list, logger):
+    def __init__(self, thread_nb, board, imageboard, output_folder, folder, is_quiet, condition, check_duplicate, tag_list, logger, single_run=False):
         # Getting info about the imageboard URL
         ib_info = imageboard_info.imageboard_info(imageboard)
 
@@ -52,6 +51,8 @@ class downloader:
         # Creating the tmp and output directory
         self.create_dir(self.tmp_dir)
         self.create_dir(self.out_dir)
+
+        self.single_run = single_run
 
         self.logger = logger
 
@@ -117,11 +118,11 @@ class downloader:
 
 
                                 time.sleep(2)
-            if archived:
+            if archived or self.single_run:
                 self.remove_thread_from_downloading()
                 self.remove_tmp_files()
                 exit(0)
-    
+
             time.sleep(20)
 
 
@@ -300,4 +301,4 @@ class downloader:
         if self.tag_list:
             with open(tag_file, 'w') as f:
                 for tag in self.tag_list:
-                    f.write(tag + "\n") 
+                    f.write(tag + "\n")
