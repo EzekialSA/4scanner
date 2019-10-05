@@ -8,7 +8,7 @@ from datetime import datetime
 from scanner import downloader, dupecheck
 
 
-def configure_logging(log_file, level=logging.INFO):
+def configure_logging(log_file: str, level=logging.INFO):
     logging.basicConfig(format='[%(asctime)s] -- %(levelname)s: %(message)s', datefmt='%Y%m%d-%H%M%S', filename=log_file, level=level)
     stdout_handler = logging.StreamHandler()
     stdout_handler.setFormatter(logging.Formatter(fmt='[%(asctime)s] -- %(levelname)s: %(message)s', datefmt='%Y%m%d-%H%M%S'))
@@ -16,7 +16,17 @@ def configure_logging(log_file, level=logging.INFO):
     return logging.getLogger()
 
 
-def condition_check(args):
+def condition_check(args:dict):
+    """
+    Build and returns a condition dict used by downloader.downloader to decide what picture to download.
+
+    Args:
+        args: program arguments parsed by argparse
+
+    Returns:
+        dict containing the conditions for download a picture
+    """
+
     # Checking conditions
     condition = {}
     if args.extension:
