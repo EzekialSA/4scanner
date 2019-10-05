@@ -235,21 +235,6 @@ print("!!! download.load not tested yet !!!                   -")
 print("--------------------------------------------------------")
 
 print("--------------------------------------------------------")
-print("Testing: download.create_dir                           -")
-print("--------------------------------------------------------")
-
-# Creating directory
-download.create_dir("test_create_dir")
-if not os.path.exists("test_create_dir"):
-    print("'test_create_dir' was not created")
-    exit(1)
-
-# Testing again because the function should not crash if folder already exist
-download.create_dir("test_create_dir")
-
-print('\x1b[6;30;42m' + 'OK' + '\x1b[0m')
-
-print("--------------------------------------------------------")
 print("Testing: download.add_to_downloaded_log                -")
 print("Testing: download.was_downloaded                       -")
 print("--------------------------------------------------------")
