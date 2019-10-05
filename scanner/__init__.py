@@ -3,8 +3,12 @@ from scanner import dupecheck
 from scanner.config import DB_FILE
 import sqlite3
 
-# Initialize the DB used to store image hash and downloaded threads
+
 def db_init():
+    """
+    Initialize the DB used to store image hash and downloaded threads
+    """
+
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
 
@@ -18,8 +22,10 @@ def db_init():
     conn.close()
 
 
-# Create home config directory
 def create_conf_dir():
+    """
+    Create home config directory
+    """
     if not os.path.isdir(os.path.expanduser("~/.4scanner")):
         os.mkdir(os.path.expanduser("~/.4scanner"))
 
