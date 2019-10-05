@@ -13,7 +13,20 @@ import threading
 import http.client
 
 class thread_scanner:
-    def __init__(self, keywords_file, output, quota_mb, wait_time, logger):
+    def __init__(self, keywords_file:str, output:str, quota_mb:int, wait_time:int, logger):
+        """
+        Using the keyword file passed as a paramater to 4scanner,
+        thread_scanner will search multiple threads and imageboards
+        and launch the download of a thread if a keyword is found in first post of the thread.
+        Use scan() to start the scan.
+
+        Args:
+            keywords_file: path of file containing whats imageboard to search as JSON (see README for more info)
+            output: The output directory where the pictures will be downloaded
+            quota_mb: stop 4scanner after quota_mb MB have been downloaded
+            wait_time: number of time to wait between scans
+        """
+
         self.keywords_file = keywords_file
         self.output = output
         self.quota_mb = quota_mb
@@ -21,7 +34,14 @@ class thread_scanner:
         self.logger = logger
 
 
-    def get_catalog_json(self, board, chan):
+    def get_catalog_json(self, board:str, chan:str):
+        """
+        Get the catalog of a given imageboards board as a JSON
+
+        Return:
+            catalog info as a dict
+        """
+
         chan_base_url = imageboard_info.imageboard_info(chan).base_url
         catalog = urllib.request.urlopen(
                 "{0}{1}/catalog.json".format(chan_base_url, board))
@@ -32,8 +52,19 @@ class thread_scanner:
         return json.loads(catalog_data.decode("utf8"))
 
 
-    def scan_thread(self, keyword, catalog_json, subject_only):
-        # Check each thread, threads who contains the keyword are returned
+    def scan_thread(self, keyword:str, catalog_json:str, subject_only:str):
+        """
+        Check each thread, threads who contains the keyword are returned
+
+        Args:
+            keyword: A keyword to search for. Example: "moot"
+            catalog_json: A dict of a board catalog, as returned by get_catalog_json()
+            subject_only: Search only withing the subject of the thread, as oposed to searching the subject and first post
+
+        Returns:
+            a list of threads number that matched the keyword
+        """
+
         matched_threads = []
         for i in range(len(catalog_json)):
             for thread in catalog_json[i]["threads"]:
@@ -52,7 +83,11 @@ class thread_scanner:
         return matched_threads
 
 
-    def download_thread(self, thread_id, chan, board, folder, output, condition, dupe_check, tag_list):
+    def download_thread(self, thread_id:int, chan:str, board:str, folder:str, output:str, condition:dict, dupe_check:bool, tag_list:list):
+        """
+        Create a downloader object with the info passed as paramater and start the download of in a new thread.
+        """
+
         thread_downloader = downloader.downloader(thread_id, board,chan, output, folder, True, condition, dupe_check, tag_list, self.logger)
         t = threading.Thread(target=thread_downloader.download)
         t.daemon = True
@@ -60,6 +95,16 @@ class thread_scanner:
 
 
     def was_downloaded(self, thread_nb):
+        """
+        Check if a thread was already downloaded in the past.
+
+        Args:
+            thread_nb: the thread number of a thread: Ex: 878129
+
+        Returns:
+            True if it was already downloaded, False otherwise
+        """
+
         conn = sqlite3.connect(DB_FILE)
         c = conn.cursor()
 
@@ -74,6 +119,16 @@ class thread_scanner:
             return False
 
     def dir_size_mb(self, directory):
+        """
+        Check the size of a directory in MB.
+
+        Args:
+            directory: the path to a directory
+
+        Returns:
+            Size of the directory in MB
+        """
+
         total_size = 0
         for dirpath, dirnames, filenames in os.walk(directory):
             for f in filenames:
@@ -83,12 +138,23 @@ class thread_scanner:
 
 
     def check_quota(self):
+        """
+        Stop 4scanner of the download quota was reached.
+        """
+
         if int(self.quota_mb) < dir_size_mb(os.path.join(self.output, "downloads")):
             self.logger.info("Quota limit exceeded. Stopping 4scanner.")
             exit(0)
 
 
     def get_check_duplicate(self, search):
+        """
+        Check whether to activate the check duplicate feature
+
+        Returns:
+            True if we need to activate it, False otherwise
+        """
+
         if 'check_duplicate' in search:
             if search['check_duplicate']:
                 return True
@@ -98,7 +164,14 @@ class thread_scanner:
         # duplicate check is on by default
         return True
 
-    def get_condition(self, search):
+    def get_condition(self, search:dict):
+        """
+        Get all search condition from a search
+
+        Returns:
+            All search conditions as a dict
+        """
+
         condition = {}
         if 'extension' in search:
             condition["ext"] = []
@@ -133,7 +206,14 @@ class thread_scanner:
         return condition
 
 
-    def get_imageboard(self, search):
+    def get_imageboard(self, search:dict):
+        """
+        get imageboard from a search
+
+        Returns:
+            imageboard_info object of an imageboard
+        """
+
         if 'imageboard' in search:
             chan = search["imageboard"]
             # will raise error if not supported
@@ -145,6 +225,13 @@ class thread_scanner:
         return chan
 
     def get_tag_list(self, search):
+        """
+        get all tags from a search
+
+        Returns:
+            a list containing all tags or None
+        """
+
         if 'tag' in search:
             tag = search["tag"]
         else:
@@ -154,6 +241,13 @@ class thread_scanner:
 
 
     def get_subject_only(self, search):
+        """
+        Check whether to search only the subject of post for a given search.
+
+        Returns:
+            True to get subject only, False otherwise
+        """
+
         if 'subject_only' in search:
             subject_only = search["subject_only"]
         else:
@@ -163,6 +257,13 @@ class thread_scanner:
 
 
     def get_keyword(self, search):
+        """
+        get a list of all keywords to use in a search.
+
+        Returns:
+            list of all keywords to search for
+        """
+
         if 'keywords' in search:
             keywords_array = []
             if isinstance(search['keywords'], str):
@@ -178,6 +279,9 @@ class thread_scanner:
 
 
     def scan(self):
+        """
+        Start the scanning/download process.
+        """
         while True:
             if self.quota_mb:
                 self.check_quota()
