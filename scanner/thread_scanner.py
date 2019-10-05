@@ -152,7 +152,7 @@ class thread_scanner:
 
         return tag
 
-    
+
     def get_subject_only(self, search):
         if 'subject_only' in search:
             subject_only = search["subject_only"]
