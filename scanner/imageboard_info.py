@@ -3,6 +3,14 @@
 class imageboard_info:
 
     def __init__(self, imageboard):
+        """
+        Used to get info about the differents supported imageboards.
+        self.base_url is the URL of the image board
+        self.image_base_url is the URL where the pictures are hosted (sometime the same as base_url)
+        self.thread_picture is the url path where the pictures are hosted
+        self.thread_subfolder is the url path where the threads are hosted
+        """
+
         if imageboard == "4chan":
             self.base_url = "http://a.4cdn.org/"
             self.image_base_url = "http://i.4cdn.org/"
