@@ -228,7 +228,7 @@ print("Testing download.py")
 
 # Creating download object
 condition = {"ext": False, "filename": False, "width": False, "height": False, }
-download = downloader.downloader(list_of_threads[0], 'a',"4chan", ".", "testci", True, condition, True, ["travistag1", "ci:travistag2"], logging.getLogger())
+download = downloader.downloader(list_of_threads[0], 'a',"4chan", ".", "testci", True, condition, True, ["travistag1", "ci:travistag2"], 2, logging.getLogger())
 
 print("--------------------------------------------------------")
 print("!!! download.load not tested yet !!!                   -")
