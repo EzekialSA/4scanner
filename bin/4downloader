@@ -76,9 +76,9 @@ def main():
     parser.add_argument("-s", "--single-run", action='store_true', help="Download all pictures and exit, do not wait for thread to 404")
     parser.add_argument("-t", "--tag", help="list of tags for importing easily into Hydrus Network, separated by ,")
     parser.add_argument("-o", "--output", help="Specify output folder")
+    parser.add_argument("-T", "--throttle", help="Number of second to throttle between images download. Default: 2", nargs='?', default="2")
     args = parser.parse_args()
 
-    print(args.thread)
     thread_nb = str(args.thread.split('/')[5].split('.')[0])
     board = str(args.thread.split('/')[3])
 
@@ -120,7 +120,7 @@ def main():
     # Setting up logger
     logger = configure_logging("./{}_4downloader.log".format(datetime.now().strftime('%Y%m%d_%H%M%S')))
 
-    thread_downloader = downloader.downloader(thread_nb, board, chan, output, folder, quiet, condition, dupe_check, tag, logger, single_run=args.single_run)
+    thread_downloader = downloader.downloader(thread_nb, board, chan, output, folder, quiet, condition, dupe_check, tag, args.throttle, logger, single_run=args.single_run)
     thread_downloader.download()
 
 

@@ -104,3 +104,13 @@ Default: true
 Example:
 - `"check_duplicate": true `
 - `"check_duplicate": false `
+
+## throttle (optional)
+
+The number of seconds between image download, this is to prevent hammering the imageboards. Please use this option responsibly. :)
+
+Default: 2
+
+Example:
+- `"throttle": 5 `
+- `"throttle": 0 `

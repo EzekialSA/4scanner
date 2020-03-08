@@ -63,7 +63,7 @@ def main():
         wait_time = 300
 
     # Setting up logger
-    logger = configure_logging("./{}_4scanner.log".format(datetime.now().strftime('%Y%m%d_%H%M%S'))) 
+    logger = configure_logging("./{}_4scanner.log".format(datetime.now().strftime('%Y%m%d_%H%M%S')))
 
     t_scanner = thread_scanner.thread_scanner(args.keywords_file, output, quota_mb, wait_time, logger)
     t_scanner.scan()

@@ -24,6 +24,7 @@ class thread_scanner:
             keywords_file: path of file containing whats imageboard to search as JSON (see README for more info)
             output: The output directory where the pictures will be downloaded
             quota_mb: stop 4scanner after quota_mb MB have been downloaded
+            throttle: Time to wait, in second, between image downloads
             wait_time: number of time to wait between scans
         """
 
@@ -83,40 +84,16 @@ class thread_scanner:
         return matched_threads
 
 
-    def download_thread(self, thread_id:int, chan:str, board:str, folder:str, output:str, condition:dict, dupe_check:bool, tag_list:list):
+    def download_thread(self, thread_id:int, chan:str, board:str, folder:str, output:str, condition:dict, dupe_check:bool, tag_list:list, throttle:int):
         """
         Create a downloader object with the info passed as paramater and start the download of in a new thread.
         """
 
-        thread_downloader = downloader.downloader(thread_id, board,chan, output, folder, True, condition, dupe_check, tag_list, self.logger)
+        thread_downloader = downloader.downloader(thread_id, board,chan, output, folder, True, condition, dupe_check, tag_list, throttle, self.logger)
         t = threading.Thread(target=thread_downloader.download)
         t.daemon = True
         t.start()
 
-
-    def was_downloaded(self, thread_nb):
-        """
-        Check if a thread was already downloaded in the past.
-
-        Args:
-            thread_nb: the thread number of a thread: Ex: 878129
-
-        Returns:
-            True if it was already downloaded, False otherwise
-        """
-
-        conn = sqlite3.connect(DB_FILE)
-        c = conn.cursor()
-
-        c.execute("SELECT Thread_Number FROM Downloaded_Thread WHERE Thread_Number = ?", (thread_nb,))
-        result = c.fetchone()
-
-        conn.close()
-
-        if result:
-            return True
-        else:
-            return False
 
     def dir_size_mb(self, directory):
         """
@@ -305,6 +282,8 @@ class thread_scanner:
                 folder_name = search["folder_name"]
                 # Get tag list (if any)
                 tag_list = self.get_tag_list(search)
+                # Get throttle
+                throttle = int(search['throttle']) if 'throttle' in search else 2
                 # if this is true we will search only the subject field
                 subject_only = self.get_subject_only(search)
                 board = search["board"]
@@ -317,11 +296,11 @@ class thread_scanner:
                         threads_id = self.scan_thread(keyword, catalog_json, subject_only)
 
                         for thread_id in list(set(threads_id)):
-                            if thread_id not in currently_downloading and not self.was_downloaded(thread_id):
+                            if thread_id not in currently_downloading:
                                 self.download_thread(thread_id, chan, board,
                                                 folder_name, self.output,
                                                 condition, dupe_check,
-                                                tag_list)
+                                                tag_list, throttle)
                             # Used to keep track of what is currently downloading
                             currently_downloading.append(thread_id)
                 except urllib.error.HTTPError as err:

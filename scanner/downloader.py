@@ -17,7 +17,7 @@ import threading
 import shutil
 
 class downloader:
-    def __init__(self, thread_nb:int, board:str, imageboard:str, output_folder:str, folder:str, is_quiet:bool, condition:dict, check_duplicate:bool, tags:list, logger, single_run=False):
+    def __init__(self, thread_nb:int, board:str, imageboard:str, output_folder:str, folder:str, is_quiet:bool, condition:dict, check_duplicate:bool, tags:list, throttle:int, logger, single_run=False):
         """
         class used for downloading a thread. Can be started after initialization by calling it's download() function.
 
@@ -31,6 +31,7 @@ class downloader:
             condition: dict used when deciding which pictures to download. Ex: {"width": "=1920", "height": "=1080"}
             check_duplicate: Avoid downloading duplicate that were already downloaded.
             tags: this list of tags will be added a file called $PICTURE_NAME.txt for every pictures to help importing pictures to hydrus network
+            throttle: Time to wait, in second, between image downloads
             logger: The logger to use with the class
             single_run: Run the download loop only once, use if you don't want to wait for a thread to 404 before exiting.
         """
@@ -64,6 +65,7 @@ class downloader:
         self.check_duplicate = check_duplicate
         self.is_quiet = is_quiet
         self.tags = tags
+        self.throttle = int(throttle)
 
         # Creating the tmp and output directory
         os.makedirs(self.tmp_dir, exist_ok=True)
@@ -118,7 +120,7 @@ class downloader:
                                 shutil.move(tmp_pic, final_pic)
                                 self.add_tag_file(final_pic + ".txt")
 
-                            time.sleep(2)
+                            time.sleep(self.throttle)
 
                 # Some imageboards allow more than 1 picture per post
                 if 'extra_files' in post:
@@ -139,7 +141,7 @@ class downloader:
                                     self.add_tag_file(final_pic + ".txt")
 
 
-                                time.sleep(2)
+                                time.sleep(self.throttle)
             if archived or self.single_run:
                 self.remove_thread_from_downloading()
                 self.remove_tmp_files()

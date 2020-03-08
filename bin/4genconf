@@ -35,7 +35,7 @@ def create_conf(final_dic):
         config_dic = set_height(config_dic)
 
     answer = input(
-        "Do you want to set [tags] to help with importing in Hydrus? (If you don't now what this is choose No) [y/N]")
+        "Do you want to set [tags] to help with importing in Hydrus? (If you don't know what this is choose No) [y/N]")
     if answer == 'y':
         config_dic = set_tags(config_dic)
 
