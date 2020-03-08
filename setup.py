@@ -16,8 +16,8 @@ setup(
     description='4chan threads scanner',
     long_description=long_description,
     url='https://github.com/Lacsap-/4scanner',
-    author='lacsap',
-    author_email='lacsap@cock.li',
+    author='Pascal Boardman',
+    author_email='pascalboardman@gmail.com',
     license='MIT',
     scripts=['bin/4downloader', 'bin/4scanner', 'bin/4genconf'],
     classifiers=[
