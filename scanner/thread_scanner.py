@@ -69,8 +69,8 @@ class thread_scanner:
         matched_threads = []
         for i in range(len(catalog_json)):
             for thread in catalog_json[i]["threads"]:
-                if not wildcard:
-                    regex = r'\b{0}\b'.format(keyword)
+                if wildcard == "all":
+                    regex = r'{0}'.format(keyword)
                     # Search thread subject
                     if 'sub' in thread:
                         if re.search(regex, str(thread["sub"]), re.IGNORECASE):
@@ -81,8 +81,22 @@ class thread_scanner:
                         if 'com' in thread:
                             if re.search(regex, str(thread["com"]), re.IGNORECASE):
                                 matched_threads.append(thread["no"])
+
+                elif wildcard == "start":
+                    regex = r'\b{0}'.format(keyword)
+                    # Search thread subject
+                    if 'sub' in thread:
+                        if re.search(regex, str(thread["sub"]), re.IGNORECASE):
+                            matched_threads.append(thread["no"])
+
+                    if not subject_only:
+                        # Search OPs post body
+                        if 'com' in thread:
+                            if re.search(regex, str(thread["com"]), re.IGNORECASE):
+                                matched_threads.append(thread["no"])
+                
                 else:
-                    regex = r'{0}'.format(keyword)
+                    regex = r'\b{0}\b'.format(keyword)
                     # Search thread subject
                     if 'sub' in thread:
                         if re.search(regex, str(thread["sub"]), re.IGNORECASE):
