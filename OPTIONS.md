@@ -114,3 +114,14 @@ Default: 2
 Example:
 - `"throttle": 5 `
 - `"throttle": 0 `
+
+
+## wildcard (optional)
+
+Adds an option to place wildcards at certain points. The "all" is equivalent to "*bar*" so will pick up "foobar", "barfoo", "foobarfoo", "bar", etc. The "start" option will allow you to pick up anything the match starts with, equivalent to "foo*"; It will match "foo", "foobar" but not "barfoo" or "barfoobar".
+
+Default: false
+
+Example:
+- `"wildcard": "all" `
+- `"wildcard": "start" `

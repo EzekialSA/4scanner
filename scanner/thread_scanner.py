@@ -53,7 +53,7 @@ class thread_scanner:
         return json.loads(catalog_data.decode("utf8"))
 
 
-    def scan_thread(self, keyword:str, catalog_json:str, subject_only:str):
+    def scan_thread(self, keyword:str, catalog_json:str, subject_only:str, wildcard:str):
         """
         Check each thread, threads who contains the keyword are returned
 
@@ -69,17 +69,45 @@ class thread_scanner:
         matched_threads = []
         for i in range(len(catalog_json)):
             for thread in catalog_json[i]["threads"]:
-                regex = r'\b{0}\b'.format(keyword)
-                # Search thread subject
-                if 'sub' in thread:
-                    if re.search(regex, str(thread["sub"]), re.IGNORECASE):
-                        matched_threads.append(thread["no"])
-
-                if not subject_only:
-                    # Search OPs post body
-                    if 'com' in thread:
-                        if re.search(regex, str(thread["com"]), re.IGNORECASE):
+                if wildcard == "all":
+                    regex = r'{0}'.format(keyword)
+                    # Search thread subject
+                    if 'sub' in thread:
+                        if re.search(regex, str(thread["sub"]), re.IGNORECASE):
                             matched_threads.append(thread["no"])
+
+                    if not subject_only:
+                        # Search OPs post body
+                        if 'com' in thread:
+                            if re.search(regex, str(thread["com"]), re.IGNORECASE):
+                                matched_threads.append(thread["no"])
+
+                elif wildcard == "start":
+                    regex = r'\b{0}'.format(keyword)
+                    # Search thread subject
+                    if 'sub' in thread:
+                        if re.search(regex, str(thread["sub"]), re.IGNORECASE):
+                            matched_threads.append(thread["no"])
+
+                    if not subject_only:
+                        # Search OPs post body
+                        if 'com' in thread:
+                            if re.search(regex, str(thread["com"]), re.IGNORECASE):
+                                matched_threads.append(thread["no"])
+                
+                else:
+                    regex = r'\b{0}\b'.format(keyword)
+                    # Search thread subject
+                    if 'sub' in thread:
+                        if re.search(regex, str(thread["sub"]), re.IGNORECASE):
+                            matched_threads.append(thread["no"])
+
+                    if not subject_only:
+                        # Search OPs post body
+                        if 'com' in thread:
+                            if re.search(regex, str(thread["com"]), re.IGNORECASE):
+                                matched_threads.append(thread["no"])
+
 
         return matched_threads
 
@@ -232,6 +260,21 @@ class thread_scanner:
 
         return subject_only
 
+    def get_wildcard(self, search):
+        """
+        Check whether to search only the subject of post for a given search.
+
+        Returns:
+            True to get subject only, False otherwise
+        """
+
+        if 'wildcard' in search:
+            wildcard = search["wildcard"]
+        else:
+            wildcard = None
+
+        return wildcard
+
 
     def get_keyword(self, search):
         """
@@ -286,6 +329,7 @@ class thread_scanner:
                 throttle = int(search['throttle']) if 'throttle' in search else 2
                 # if this is true we will search only the subject field
                 subject_only = self.get_subject_only(search)
+                wildcard = self.get_wildcard(search)
                 board = search["board"]
                 keywords = self.get_keyword(search)
 
@@ -293,7 +337,7 @@ class thread_scanner:
                     catalog_json = self.get_catalog_json(board, chan)
 
                     for keyword in keywords:
-                        threads_id = self.scan_thread(keyword, catalog_json, subject_only)
+                        threads_id = self.scan_thread(keyword, catalog_json, subject_only, wildcard)
 
                         for thread_id in list(set(threads_id)):
                             if thread_id not in currently_downloading:
