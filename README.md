@@ -17,6 +17,8 @@ You can create an issue if you want to see other imageboards supported
 
 (4scanner is ONLY compatible with python3+)
 
+For Arch Linux there is an [AUR package](https://aur.archlinux.org/packages/4scanner/)
+
 ## Running via Docker
 Create a config (detail below), name it config.json and drop it where you would like to download the images. Then run a container:
 
