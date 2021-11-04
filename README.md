@@ -17,12 +17,14 @@ You can create an issue if you want to see other imageboards supported
 
 (4scanner is ONLY compatible with python3+)
 
+For Arch Linux there is an [AUR package](https://aur.archlinux.org/packages/4scanner/)
+
 ## Running via Docker
 Create a config (detail below), name it config.json and drop it where you would like to download the images. Then run a container:
 
 `docker run -v /can/be/anywhere:/output -v /anywhere/else:/root/.4scanner lacsap/4scanner`
 
-`/can/be/anywhere` Can be anywhere on your computer, images will be downloaded there (This is the dorectory where you need to put the config.json)
+`/can/be/anywhere` Can be anywhere on your computer, images will be downloaded there (This is the directory where you need to put the config.json)
 `/anywhere/else` Can be anywhere on your computer, it will contain the sqlite3 database 4scanner use to keep track of downloaded threads and duplicate
 
 ## How to
@@ -75,7 +77,7 @@ To see all available options with examples check out: [OPTIONS.md](OPTIONS.md)
 
 [Hydrus Network](https://hydrusnetwork.github.io/hydrus/) users: check out the `tag` [option](OPTIONS.md) to automatically tag your images on import
 
-- Example with all optionals options
+- Example with all optional options
 ```json
 {"searches":[
     {
@@ -98,7 +100,7 @@ This will download images bigger than 1000x1000 which are .jpg or .png with a fi
 
 ## Notes
 
-- the keywords search is case insentitive
+- the keywords search is case insensitive
 
 ## 4downloader
 
